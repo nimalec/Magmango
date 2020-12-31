@@ -38,15 +38,15 @@ class SpinsVectors:
                elif self.crystal_type_ is "monoclinic":
                     self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
                elif self.crystal_type_ is "orthorhombic":
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
+                    self.angle_range_ = np.array([[0, np.pi],[0, np.pi]])
                elif self.crystal_type_ is "tetragonal":
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
+                    self.angle_range_ = np.array([[0, np.pi],[0, np.pi/2]])
                elif self.crystal_type is "trigonal":
                     self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
                elif self.crystal_type is "hexagonal":
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
+                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi/3]])
                else:
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
+                    self.angle_range_ = np.array([[0, np.pi/2],[0, np.pi/2]])
             else:
                 self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
 
