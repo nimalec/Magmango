@@ -1,6 +1,6 @@
-class MagenticAnisotropySphereFlow:
+class MagenticAnisotropyFlow:
 
-    def __init__(self, workdir, npoints, kgrid, nbands, nodes, ppn, ref_orient, ldaul, magmom, Uparam, Jparam, encut, potcar_path, struct_path, name ="mae_calc", time_cl="12:00:00", time_ncl="01:40:00", ismear=-5, sigma=0.2, nelect=None, cl_dir=None):
+    def __init__(self, npoints, workdir, cl_calc_settings, ncl_calc_settings, structure, pseudo_settings, symm_reduce = True, angle_range = None, input_spins = None):
 
         """
         Computes the MCAE sphere for a defined structure.
@@ -8,87 +8,87 @@ class MagenticAnisotropySphereFlow:
 
         self._workdir = workdir
         self._npoints = npoints
-        self._name = name
-        self._structure_path = struct_path
-        self._potcar_path =  potcar_path
-        self._reference_orientation = ref_orient
-        self._collinear_calc = None
-        self._cl_dir = cl_dir
-        self._collinear_calc = None
-        if self._cl_dir:
-           pass
+        self._structure = structure
+        self._cl_calc = None
+        self._ncl_calc = None
+
+        if input_spins:
+            spins = SpinVectors(input_spins)
+        elif angle_range:
+            spins = SpinVectors(npoints=npoints, angle_range = angle_range)
         else:
-           self._cl_dir = self._workdir+"/"+"scf_cl"
-        self._non_collinear_calcs = []
+            spins = SpinVectors(npoints=npoints, space_group = structure._sg)
 
-        def generate_spin_axes_h(npoints):
-            golden_angle = (3 - np.sqrt(5)) * np.pi
-            theta = golden_angle * np.arange(npoints)
-            Sz = np.linspace(1/npoints-1, 1-1/npoints, npoints)
-            radius = np.sqrt(1 - Sz * Sz)
-            Sy = radius * np.sin(theta)
-            Sx = radius * np.cos(theta)
-            saxes_temp = np.round(np.array([Sx,Sy,Sz]).T, 4)
-            saxes = saxes_temp.tolist()
-            return saxes
-
-        self._saxes = generate_spin_axes_h(self._npoints)
-        self._saxes.append(self._reference_orientation)
-
-        def set_calculations_h(cl_calc, cl_dir, saxes, workdir, nodes, ppn, time_cl, time_ncl, ismear, sigma, kgrid, encut, magmom, ldaul, Uparam, Jparam, nbands, nelect):
-            if cl_calc:
-                collinear_calc = None
-            else:
-               cl_settings = DefaultMagCLParameters(encut=encut, magmom=magmom, ldaul=ldaul, Uparam=Uparam, Jparam=Jparam)
-               cl_settings.update_parallel_settings("flnm ", "run_cl.sh")
-               cl_settings.update_parallel_settings("job_name", "cl_run")
-               cl_settings.update_parallel_settings("nodes", nodes)
-               cl_settings.update_parallel_settings("ppn", ppn)
-               cl_settings.update_parallel_settings("max_time", time_cl)
-               cl_settings.update_electronic_settings("ISMEAR", ismear)
-               cl_settings.update_electronic_settings("SIGMA", sigma)
-               cl_settings.update_electronic_settings("EDIFF", 1.0E-6)
-               if nelect:
-                    cl_settings.update_start_settings("NELECT", nelect)
-               else:
-                 pass
-
-               collinear_calc = SCFCalculation(cl_dir, pseudo_par=None, kgrid=kgrid, name="scf_cl", input_parameters=cl_settings)
-            itr = 0
-            non_collinear_calcs = []
-            for spin_axis in saxes:
-                ncl_settings = DefaultMagNCLParameters(encut=encut, spinaxis=spin_axis, ldaul=ldaul, Uparam=Uparam, Jparam=Jparam)
-                ncl_settings.update_start_settings("NBANDS", nbands)
-                ncl_settings.update_start_settings("LWAVE", ".FALSE.")
-                ncl_settings.update_parallel_settings("flnm ", "run_ncl.sh")
-                ncl_settings.update_parallel_settings("job_name", "ncl_run_"+str(itr))
-                ncl_settings.update_parallel_settings("nodes", nodes)
-                ncl_settings.update_parallel_settings("ppn", ppn)
-                ncl_settings.update_parallel_settings("max_time", time_ncl)
-                ncl_settings.update_parallel_settings("KPAR", None)
-                ncl_settings.update_parallel_settings("exec", "vasp_ncl")
-                ncl_settings.update_electronic_settings("ISMEAR", ismear)
-                ncl_settings.update_electronic_settings("SIGMA", sigma)
-                ncl_settings.update_electronic_settings("EDIFF", 1.0E-4)
-                if nelect:
-                     ncl_settings.update_start_settings("NELECT", nelect)
-                else:
-                  pass
-
-                ncl_dir = workdir+"/"+"scf_ncl"+"/"+"scf_ncl_"+str(itr)
+        def make_calculations_h(workdir, spins, machine_settings, cl_calc_settings, ncl_calc_settings, structure, pseudo_settings):
+            cl_calc = SCFCalculation(cl_dir, pseudo_par=None, kgrid=kgrid, name="scf_cl", input_parameters=cl_settings)
+            ncl_calcs = []
+            spin_vectors  = spins._spin_axes
+            for i in range(spins.npoints):
                 ncl_calc = SCFCalculation(ncl_dir, pseudo_par=None, kgrid=kgrid, name="scf_ncl_"+str(itr), input_parameters=ncl_settings)
-                non_collinear_calcs.append(ncl_calc)
-                itr += 1
-            return [collinear_calc, non_collinear_calcs]
+                ncl_calcs.append(ncl_calc)
+            return [cl_calc, ncl_calc]
+        
 
 
-        [self._collinear_calc, self._non_collinear_calcs] = set_calculations_h(self._collinear_calc, self._cl_dir, self._saxes, self._workdir, nodes, ppn, time_cl, time_ncl, ismear, sigma, kgrid, encut, magmom, ldaul, Uparam, Jparam, nbands, nelect)
 
-    def make_calculations(self):
-        os.mkdir(self._workdir)
-        self._collinear_calc.make_calculation(struct_path=self._structure_path, potcar_path=self._potcar_path)
-        os.mkdir(self._workdir+"/"+"scf_ncl")
-        for calc in self._non_collinear_calcs: calc.make_calculation(struct_path=self._structure_path, potcar_path=self._potcar_path)
+
+
+
+
+    #     def set_calculations_h(cl_calc, cl_dir, saxes, workdir, nodes, ppn, time_cl, time_ncl, ismear, sigma, kgrid, encut, magmom, ldaul, Uparam, Jparam, nbands, nelect):
+    #         if cl_calc:
+    #             collinear_calc = None
+    #         else:
+    #            cl_settings = DefaultMagCLParameters(encut=encut, magmom=magmom, ldaul=ldaul, Uparam=Uparam, Jparam=Jparam)
+    #            cl_settings.update_parallel_settings("flnm ", "run_cl.sh")
+    #            cl_settings.update_parallel_settings("job_name", "cl_run")
+    #            cl_settings.update_parallel_settings("nodes", nodes)
+    #            cl_settings.update_parallel_settings("ppn", ppn)
+    #            cl_settings.update_parallel_settings("max_time", time_cl)
+    #            cl_settings.update_electronic_settings("ISMEAR", ismear)
+    #            cl_settings.update_electronic_settings("SIGMA", sigma)
+    #            cl_settings.update_electronic_settings("EDIFF", 1.0E-6)
+    #            if nelect:
+    #                 cl_settings.update_start_settings("NELECT", nelect)
+    #            else:
+    #              pass
+    #
+    #            collinear_calc = SCFCalculation(cl_dir, pseudo_par=None, kgrid=kgrid, name="scf_cl", input_parameters=cl_settings)
+    #         itr = 0
+    #         non_collinear_calcs = []
+    #         for spin_axis in saxes:
+    #             ncl_settings = DefaultMagNCLParameters(encut=encut, spinaxis=spin_axis, ldaul=ldaul, Uparam=Uparam, Jparam=Jparam)
+    #             ncl_settings.update_start_settings("NBANDS", nbands)
+    #             ncl_settings.update_start_settings("LWAVE", ".FALSE.")
+    #             ncl_settings.update_parallel_settings("flnm ", "run_ncl.sh")
+    #             ncl_settings.update_parallel_settings("job_name", "ncl_run_"+str(itr))
+    #             ncl_settings.update_parallel_settings("nodes", nodes)
+    #             ncl_settings.update_parallel_settings("ppn", ppn)
+    #             ncl_settings.update_parallel_settings("max_time", time_ncl)
+    #             ncl_settings.update_parallel_settings("KPAR", None)
+    #             ncl_settings.update_parallel_settings("exec", "vasp_ncl")
+    #             ncl_settings.update_electronic_settings("ISMEAR", ismear)
+    #             ncl_settings.update_electronic_settings("SIGMA", sigma)
+    #             ncl_settings.update_electronic_settings("EDIFF", 1.0E-4)
+    #             if nelect:
+    #                  ncl_settings.update_start_settings("NELECT", nelect)
+    #             else:
+    #               pass
+    #
+    #             ncl_dir = workdir+"/"+"scf_ncl"+"/"+"scf_ncl_"+str(itr)
+    #             ncl_calc = SCFCalculation(ncl_dir, pseudo_par=None, kgrid=kgrid, name="scf_ncl_"+str(itr), input_parameters=ncl_settings)
+    #             non_collinear_calcs.append(ncl_calc)
+    #             itr += 1
+    #         return [collinear_calc, non_collinear_calcs]
+    #
+    #
+    #     [self._collinear_calc, self._non_collinear_calcs] = set_calculations_h(self._collinear_calc, self._cl_dir, self._saxes, self._workdir, nodes, ppn, time_cl, time_ncl, ismear, sigma, kgrid, encut, magmom, ldaul, Uparam, Jparam, nbands, nelect)
+    #
+    # def make_calculations(self):
+    #     os.mkdir(self._workdir)
+    #     self._collinear_calc.make_calculation(struct_path=self._structure_path, potcar_path=self._potcar_path)
+    #     os.mkdir(self._workdir+"/"+"scf_ncl")
+    #     for calc in self._non_collinear_calcs: calc.make_calculation(struct_path=self._structure_path, potcar_path=self._potcar_path)
 
     # def run_cl_calculation(self):
     #     self._collinear_calc.run_calculation()

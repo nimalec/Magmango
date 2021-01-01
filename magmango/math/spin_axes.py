@@ -21,7 +21,7 @@ class SpinsVectors:
 
        if npoints:
             assert type(npoints) is int
-            self.npoints_ = npoints
+            self._npoints = npoints
             #self.outfile_path = outfile_path
 
             if space_group:
@@ -31,40 +31,40 @@ class SpinsVectors:
                except ValueError:
                  sg_obj = SpaceGroup(space_group)
 
-               self.crystal_type_ = sg_obj.crystal_system
+               self._crystal_type = sg_obj.crystal_system
 
-               if self.crystal_type_ is "triclinic":
-                   self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
-               elif self.crystal_type_ is "monoclinic":
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
-               elif self.crystal_type_ is "orthorhombic":
-                    self.angle_range_ = np.array([[0, np.pi],[0, np.pi]])
-               elif self.crystal_type_ is "tetragonal":
-                    self.angle_range_ = np.array([[0, np.pi],[0, np.pi/2]])
-               elif self.crystal_type is "trigonal":
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
-               elif self.crystal_type is "hexagonal":
-                    self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi/3]])
+               if self._crystal_type is "triclinic":
+                   self._angle_range = np.array([[0, np.pi],[0, 2*np.pi]])
+               elif self._crystal_type is "monoclinic":
+                    self._angle_range = np.array([[0, np.pi],[0, 2*np.pi]])
+               elif self._crystal_type is "orthorhombic":
+                    self._angle_range = np.array([[0, np.pi],[0, np.pi]])
+               elif self._crystal_type is "tetragonal":
+                    self._angle_range = np.array([[0, np.pi],[0, np.pi/2]])
+               elif self._crystal_type is "trigonal":
+                    self._angle_range = np.array([[0, np.pi],[0, 2*np.pi]])
+               elif self._crystal_type is "hexagonal":
+                    self._angle_range = np.array([[0, np.pi],[0, 2*np.pi/3]])
                else:
-                    self.angle_range_ = np.array([[0, np.pi/2],[0, np.pi/2]])
+                    self._angle_range = np.array([[0, np.pi/2],[0, np.pi/2]])
             else:
-                self.angle_range_ = np.array([[0, np.pi],[0, 2*np.pi]])
+                self._angle_range = np.array([[0, np.pi],[0, 2*np.pi]])
 
-            thet_min = self.angle_range_[1][0]
-            thet_max = self.angle_range_[1][1]
-            phi_min = self.angle_range_[0][0]
-            phi_max = self.angle_range_[0][1]
-            self.spin_axes_, angle_list = generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max)
-            self.spher_coords_ = [angle_list[0], angle_list[1], np.ones(npoints)]
+            thet_min = self._angle_range[1][0]
+            thet_max = self._angle_range_[1][1]
+            phi_min = self._angle_range_[0][0]
+            phi_max = self._angle_range[0][1]
+            self._spin_axes, angle_list = generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max)
+            self._spher_coords = [angle_list[0], angle_list[1], np.ones(npoints)]
        elif input_spins:
            ## Add assertions
-           self._spin_axes_ = np.array(input_spins)
-           self.spher_coords_ = None
+           self._spin_axes = np.array(input_spins)
+           self._spher_coords = None
            ## Normalize
 
        @property
        def spher_points(self):
-          return self.spher_coords_
+          return self._spher_coords
 
        # @classmethod
        # def cart_to_spher(self):
