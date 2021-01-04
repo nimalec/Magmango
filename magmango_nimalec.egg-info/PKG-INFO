@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: magmango-nimalec
+Version: 0.0.1
+Summary: Magmango: the magnetic properties package. Compute magnetic properties of materials from first-principles
+Home-page: https://github.com/nimalec/Magmango
+Author: Nima Leclerc
+Author-email: nleclerc@lbl.gov
+License: UNKNOWN
+Description: # Magmango
+        Magmango is an open source package for first-principles magnetic property predictions of dilute and bulk magnetic materials. 
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

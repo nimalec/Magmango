@@ -1,8 +1,9 @@
 import pymatgen
 import numpy as np
+from numpy import arccos, sin, cos
 from pymatgen.symmetry.groups import SpaceGroup
 class SpinsVectors:
-    def __init__(self, input_spins = None, npoints=None, space_group = None, angle_range = None, outfile_path = None):
+    def __init__(self, input_spins = None, npoints=None, space_group = None, angle_range = None):
         """
         Set of unit vector representing the orientation of spin magnetic moments.
 
@@ -11,18 +12,17 @@ class SpinsVectors:
         :param angle_range: angular range of vectors to compute [list or ndarray] ([[phi_min, phi_max], [theta_min, theta_max]])
         """
 
-       def generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max):
-           u = np.arange(0,1.0,1/int(np.sqrt(npoints)))
-           thet = (thet_max - thet_min)*(u + thet_min)
-           phi = arccos((cos(phi_max) - cos(phi_min))*u + cos(phi_min))
-           thetas, phis = np.meshgrid(thet, phi, sparse=False, indexing='xy')
-           x, y, z = cos(thetas) * sin(phis), sin(thetas) * sin(phis), cos(phis)
-           return np.array([x.flatten(),y.flatten(),z.flatten()]), np.array([thetas, phis])
+        def generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max):
+            u = np.arange(0,1.0,1/int(np.sqrt(npoints)))
+            thet = (thet_max - thet_min)*(u + thet_min)
+            phi = arccos((cos(phi_max) - cos(phi_min))*u + cos(phi_min))
+            thetas, phis = np.meshgrid(thet, phi, sparse=False, indexing='xy')
+            x, y, z = cos(thetas) * sin(phis), sin(thetas) * sin(phis), cos(phis)
+            return np.array([x.flatten(),y.flatten(),z.flatten()]), np.array([thetas, phis])
 
-       if npoints:
-            assert type(npoints) is int
+        if npoints:
+            assert type(npoints) is int ##change to isinstance
             self._npoints = npoints
-            #self.outfile_path = outfile_path
 
             if space_group:
                try:
@@ -51,29 +51,29 @@ class SpinsVectors:
                 self._angle_range = np.array([[0, np.pi],[0, 2*np.pi]])
 
             thet_min = self._angle_range[1][0]
-            thet_max = self._angle_range_[1][1]
-            phi_min = self._angle_range_[0][0]
+            thet_max = self._angle_range[1][1]
+            phi_min = self._angle_range[0][0]
             phi_max = self._angle_range[0][1]
             self._spin_axes, angle_list = generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max)
             self._spher_coords = [angle_list[0], angle_list[1], np.ones(npoints)]
-       elif input_spins:
+        elif input_spins:
            ## Add assertions
            self._spin_axes = np.array(input_spins)
            self._spher_coords = None
            ## Normalize
 
-       @property
-       def spher_points(self):
-          return self._spher_coords
-
+       # @property
+       # def spher_points(self):
+       #    return self._spher_coords
+       #
+       # # @classmethod
+       # # def cart_to_spher(self):
+       # #     self.spher_coords_ = None
+       # #     return self.spher_coords_
        # @classmethod
-       # def cart_to_spher(self):
-       #     self.spher_coords_ = None
-       #     return self.spher_coords_
-       @classmethod
-       def add_spins(self, spin_vectors):
-           spin_list = self.spin_axes_.tolist()
-           spin_vectors.tolist()
-           spin_list.append(spin_vectors)
-           self.spin_axes_ = np.array(spin_list)
-           self.cart_to_spher()
+       # def add_spins(self, spin_vectors):
+       #     spin_list = self.spin_axes_.tolist()
+       #     spin_vectors.tolist()
+       #     spin_list.append(spin_vectors)
+       #     self.spin_axes_ = np.array(spin_list)
+       #     self.cart_to_spher()
