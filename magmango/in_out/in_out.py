@@ -1,10 +1,10 @@
 import numpy as np
 import os
 import shutil
-from structure import *
+from pymatgen.io.vasp.inputs import Incar
 
 
-def make_runscript_h(work_dir, input_settings):
+def write_runscript(work_dir, input_settings):
     """
     Generates runscript provided run settings for VASP calculation.
 
@@ -38,7 +38,7 @@ def make_runscript_h(work_dir, input_settings):
     if os.path.exists("__pycache__") is True:
        os.system("rm -r __pycache__")
 
-def make_incar_h(work_dir, input_settings,name="system"):
+def write_incar(work_dir, input_settings,name="system"):
     """
     Generates VASP INCAR file for VASP calculation.
 
@@ -151,7 +151,7 @@ def make_incar_h(work_dir, input_settings,name="system"):
     if os.path.exists("__pycache__") is True:
        os.system("rm -r __pycache__")
 
-def make_potcar_h(work_dir, pseudo_par):
+def write_potcar(work_dir, pseudo_par):
     """
     Generates VASP POTCAR file for VASP calculation.
 
@@ -171,7 +171,7 @@ def make_potcar_h(work_dir, pseudo_par):
     os.system("cat"+files+">> POTCAR")
     shutil.move("POTCAR", work_dir)
 
-def make_poscar_h(work_dir, structure, number, species, name=None):
+def write_poscar(work_dir, structure, number, species, name=None):
     """
     Generates VASP POSCAR file for VASP calculation.
 
@@ -210,7 +210,7 @@ def make_poscar_h(work_dir, structure, number, species, name=None):
     if os.path.exists("__pycache__") is True:
        os.system("rm -r __pycache__")
 
-def make_kpoints_h(work_dir, kmesh, qshift=None):
+def write_kpoints(work_dir, kmesh, qshift=None):
     """
     Generates VASP POSCAR file for VASP calculation.
 
@@ -232,18 +232,54 @@ def make_kpoints_h(work_dir, kmesh, qshift=None):
     f.close()
     if os.path.exists("__pycache__") is True:
        os.system("rm -r __pycache__")
-#
-# def read_incar(incar_path):
-#     if incar_path != None:
-#        if os.path.exists(incar_path) is False:
-#           print("INCAR file doesen't exist")
-#           break
-#     f = open(incar_path), "r")
-#     for line in f:
 
 
+def read_incar(incar_path):
+    incar = Incar.from_file(incar_path)
+    dict = incar.as_dict()
+    dict.pop("@class")
+    dict.pop("@module")
+    start_settings = set(["nwrite", "istart", "iniwav", "icharg", "nelect", "lorbit", "nedos", "loptics", "isym", "lelf", "lvhar", "rwigs", "lvtof", "nbands", "lwave"])
+    electronic_settings = set(["prec", "algo", "encut", "nelm", "nelmin", "gga", "ediff", "ismear", "sigma", "lasph", "lreal", "addgrid", "maxmix", "bmix"])
+    magnetic_settings = set(["magmom", "ispin", "nupdown", "lsorbit", "saxis", "lnoncollinear"])
+    hubbard_settings  = set(["ldau", "ldauu", "ldatype", "ldaul", "ldauj", "lmaxmix"])
+    ionic_settings = set(["ediffg", "nsw", "ibrion", "isif", "isym", "nblock", "kblock", "iwavpr", "potim"])
+    hybrid_settings = set(["lhfcalc", "precfock", "nkred", "time", "hflmax", "hfscreen", "aexx"])
 
 
+    settings = {}
+    start_dict  = {}
+    electronic_dict  = {}
+    magnetic_dict  = {}
+    ionic_dict  = {}
+    hubbard_dict  = {}
+    hybrid_dict  = {}
+    misc_dict = {}
 
+    for key, value in dict.items():
+        key = key.lower()
+        value = str(value).split("!")
+        value = value[0]
+        if key in start_settings:
+            start_dict[key] = value
+        elif key in electronic_settings:
+            electronic_dict[key] = value
+        elif key in magnetic_settings:
+            magnetic_dict[key] = value
+        elif key in ionic_settings :
+            ionic_dict[key] = value
+        elif key in hubbard_settings:
+            hubbard_dict[key] = value
+        elif key in hybrid_settings :
+            hybrid_dict[key] = value
+        else:
+            misc_dict[key] = value
 
-#def make_mae_output_h()
+    settings["start"] = start_dict
+    settings["electronic"] = electronic_dict
+    settings["magnetic"] = magnetic_dict
+    settings["ionic"] = ionic_dict
+    settings["hubbard"] = hubbard_dict
+    settings["hybrid"] = hybrid_dict
+    settings["misc"] = misc_dict
+    return settings
