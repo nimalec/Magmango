@@ -49,66 +49,67 @@ def write_incar(work_dir, input_settings,name="system"):
     """
 
     fl_nm = "INCAR"
-    if os.path.exists(work_dir+fl_nm) is True:
-        os.remove(work_dir+fl_nm)
+    pth = os.path.join(os.path.dirname(work_dir),"INCAR")
+    if os.path.exists(pth) is True:
+        os.remove(pth)
     else:
         pass
-    f=open(fl_nm, "w")
+    f=open(pth, "w")
 
     f.write("SYSTEM=   "+name+"\n")
     f.write("start parameters"+"\n")
 
-    for key in input_settings._start_settings:
-        if input_settings._start_settings[key]:
-            f.write(key+"=   "+str(input_settings._start_settings[key])+"\n")
+    for key, value in input_settings["start"].items():
+        if value:
+            f.write(key.upper()+"=   "+str(value)+"\n")
         else:
             pass
 
     f.write("\n")
-    f.write("parallel settings"+"\n")
-    if input_settings._parallel_settings["NCORE"] == None:
+    f.write("parallel"+"\n")
+    if input_settings["parallel"]["ncore"] == None:
        pass
     else:
-       f.write("NCORE"+"=   "+str(input_settings._parallel_settings["NCORE"])+"\n")
-    if input_settings._parallel_settings["KPAR"] == None:
+       f.write("NCORE"+"=   "+str(input_settings["parallel"]["ncore"])+"\n")
+    if input_settings["parallel"]["kpar"] == None:
        pass
     else:
-       f.write("KPAR"+"=   "+str(input_settings._parallel_settings["KPAR"])+"\n\n")
+       f.write("KPAR"+"=   "+str(input_settings["parallel"]["kpar"])+"\n\n")
     f.write("\n")
     f.write("electronic"+"\n")
-    for key in input_settings._electronic_settings:
-        if input_settings._electronic_settings[key]:
-            f.write(key+"=   "+str(input_settings._electronic_settings[key])+"\n")
+    for key, value in input_settings["electronic"].items():
+        if value:
+            f.write(key.upper()+"=   "+str(value)+"\n")
         else:
             pass
     f.write("\n")
 
-    if input_settings._ionic_settings:
+    if input_settings["ionic"]:
         f.write("ionic"+"\n")
-        for key in input_settings._ionic_settings:
-            if input_settings._ionic_settings[key]:
-                f.write(key+"=   "+str(input_settings._ionic_settings[key])+"\n")
+        for key, value in input_settings["ionic"].items():
+            if value:
+                f.write(key.upper()+"=   "+str(value)+"\n")
             else:
                 pass
         f.write("\n")
 
-    if input_settings._magnetic_settings:
+    if input_settings["magnetic"]:
         f.write("magnetic"+"\n")
-        for key in input_settings._magnetic_settings:
-            if input_settings._magnetic_settings[key]:
-                if key == "SAXIS":
-                    saxis = input_settings._magnetic_settings[key]
+        for key, value in input_settings["magnetic"].items():
+            if value:
+                if key == "saxis":
+                    saxis = value
                     saxis_line = str(saxis[0])+" "+str(saxis[1])+" "+str(saxis[2])
-                    f.write(key+"=   "+saxis_line+"\n")
-                elif key == "MAGMOM":
+                    f.write(key.upper()+"=   "+saxis_line+"\n")
+                elif key.lower() == "magmom":
                    line = " "
-                   magmom = input_settings._magnetic_settings[key]
+                   magmom = value
                    for i in magmom:
                      line += str(i) + " "
                    #magmom_line = str(magmom[0])+" "+str(magmom[1])+" "+str(magmom[2])
-                   f.write(key+"=   "+line+"\n")
+                   f.write(key.upper()+"=   "+line+"\n")
                 else:
-                   f.write(key+"=   "+str(input_settings._magnetic_settings[key])+"\n")
+                   f.write(key.upper()+"=   "+str(value)+"\n")
             else:
                 pass
 
@@ -122,34 +123,33 @@ def write_incar(work_dir, input_settings,name="system"):
     #     f.write("\n")
 
     f.write("\n")
-    if input_settings._hubbard_settings:
+    if input_settings["hubbard"]:
         f.write("hubbard"+"\n")
-        for key in input_settings._hubbard_settings:
-            if input_settings._hubbard_settings[key]:
-                if key == "LDAUL" or key == "LDAUJ" or key=="LDAUU":
+        for key, value in input_settings["hubbard"].items():
+            if value:
+                if key.lower() == "ldaul" or key.lower() == "ldauj" or key.lower()=="ldauu":
                     line = ""
-                    for i in input_settings._hubbard_settings[key]:
+                    for i in value:
                         line += str(i)+ " "
-                    f.write(key+"=   "+line+"\n")
+                    f.write(key.upper()+"=   "+line+"\n")
                 else:
-                    f.write(key+"=   "+str(input_settings._hubbard_settings[key])+"\n")
+                    f.write(key.upper()+"=   "+str(value)+"\n")
             else:
                 pass
         f.write("\n")
 
-    if input_settings._misc_settings:
+    if input_settings["misc"]:
         f.write("misc"+"\n")
-        for key in input_settings._misc_settings:
-            if input_settings._misc_settings[key]:
-                f.write(key+"=   "+str(input_settings._misc_settings[key])+"\n")
+        for key, value in input_settings["misc"].items():
+            if value:
+                f.write(key.upper()+"=   "+str(value)+"\n")
             else:
                 pass
         f.write("\n")
 
     f.close()
-    shutil.move(fl_nm, work_dir)
     if os.path.exists("__pycache__") is True:
-       os.system("rm -r __pycache__")
+      os.system("rm -r __pycache__")
 
 def write_potcar(work_dir, pseudo_par):
     """
@@ -239,7 +239,7 @@ def read_incar(incar_path):
     dict = incar.as_dict()
     dict.pop("@class")
     dict.pop("@module")
-    start_settings = set(["nwrite", "istart", "iniwav", "icharg", "nelect", "lorbit", "nedos", "loptics", "isym", "lelf", "lvhar", "rwigs", "lvtof", "nbands", "lwave"])
+    start_settings = set(["nwrite", "istart", "iniwav", "icharg", "nelect", "icorelevel", "loptics", "isym", "lelf", "lvhar", "rwigs", "lvtof", "nbands", "lwave"])
     electronic_settings = set(["prec", "algo", "encut", "nelm", "nelmin", "gga", "ediff", "ismear", "sigma", "lasph", "lreal", "addgrid", "maxmix", "bmix"])
     magnetic_settings = set(["magmom", "ispin", "nupdown", "lsorbit", "saxis", "lnoncollinear"])
     hubbard_settings  = set(["ldau", "ldauu", "ldatype", "ldaul", "ldauj", "lmaxmix"])
@@ -283,3 +283,8 @@ def read_incar(incar_path):
     settings["hybrid"] = hybrid_dict
     settings["misc"] = misc_dict
     return settings
+
+#def get_total_energy(file):
+#def get_mag_moment(file):
+#def get_run_status(file):
+#def get_run_time(file):

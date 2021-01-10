@@ -3,11 +3,10 @@ from pymatgen.io.vasp.inputs import Incar
 from magmango.in_out.in_out import read_incar, write_incar
 
 class IncarSettings:
-        def __init__(self, from_file = False, start_settings=None, electronic_settings=None, magnetic_settings=None, ionic_settings=None, hubbard_settings=None, hybrid_settings=None, misc_settings=None):
+        def __init__(self, from_file = False, start_settings=None, electronic_settings=None, parallel_settings=None, magnetic_settings=None, ionic_settings=None, hubbard_settings=None, hybrid_settings=None, misc_settings=None):
                self._settings = {}
                if from_file is False:
-                   self._settings["start"] = start_settings or {"nwrite": 2, "istart": 1, "iniwav": 1, "icharg": None, "nelect": None, "lorbit": 11,
-                                  "nedos": 1000, "loptics": ".FALSE.","isym": -1 , "lel": None, "lvhar": None, "rwigs": None, "lvtof": None, "nbands": None, "lwave": None}
+                   self._settings["start"] = start_settings or {"nwrite": 2, "istart": 1, "iniwav": 1, "icharg": None, "nelect": None, "loptics": ".FALSE.","isym": -1 , "lel": None, "lvhar": None, "rwigs": None, "lvtof": None, "nbands": None, "lwave": None}
                    self._settings["electronic"] = electronic_settings or  {"prec":"Accurate" , "algo": "Normal", "encut": 800,
                     "nelm": None, "nelmin": None, "gga": "PS" ,"ediff": 10E-05, "ismear": 1, "sigma": 0.2, "lasph": ".TRUE.", "lreal": "Auto", "addgrid": ".TRUE.", "maxmix": 100, "bmix": 1.5}
                    self._settings["parallel"] = parallel_settings or {"ncore": "2" , "lplane": ".TRUE.",  "kpar": "2"}
@@ -74,89 +73,72 @@ class IncarSettings:
             else:
                 print("Error: Invalid setting_type!!")
 
-# class DefaultOptimizationParameters(IncarSettings):
-#         def __init__(self, encut, name="relax_settings"):
-#             """
-#             Sets default input parameters for optimization
-#
-#             **Args:
-#
-#             encut (float): planewave energy cutoff for calculation
-#             name (str): name for relaxation setting [default="relax_settings"]
-#
-#             """
-#
-#             ionic = {"ediff": "1E-17", "nsw": "20", "ibrion": "2" ,"isif": "2", "isym": "-1", "nblock": "1",  "kblock": "20"}
-#             InputParameters.__init__(self, ionic_settings=ionic, name=name)
-#             self.update_electronic_sttings("ENCUT", encut)
-#
-# class DefaultSCFParameters(InputParameters):
-#          def __init__(self, encut):
-#              """
-#              Sets default input parameters for scf ground state energy calculation
-#
-#              **Args:
-#                encut (float): planewave energy cutoff for calculation
-#                name (str): name for scf setting [default="scf_settings"]
-#
-#              """
-#              InputParameters.__init__(self, name=name)
-#              self.update_electronic_settings("ENCUT", encut)
-#
-# class DefaultSCFUParameters(InputParameters):
-#          def __init__(self, encut, ldaul, Uparam, Jparam, name="DFTU_settings"):
-#              """
-#              Sets default input parameters for scf ground state energy calculation with +U correction
-#
-#              encut (float): planewave energy cutoff for calculation
-#              ldaul (list): list of  orbital types for each species
-#              Uparam (list): list of U parameters for each species
-#              Jparam (list): list of J paramters for each species
-#              name (str):  name for scf+U setting [default="DFTU_settings"]
-#
-#              """
-#
-#              dftu_settings = {"LDAU": ".TRUE." , "LDAUU": Uparam, "LDATYPE": 2, "LADAUL": ldaul, "LDAUJ": Jparam , "LMAXMIX": 4}
-#              InputParameters.__init__(self, name=name, hubbard_settings=dftu_settings)
-#              self.update_electronic_settings("ENCUT", encut)
-#
-#
-# class DefaultMagCLParameters(InputParameters):
-#          def __init__(self, encut, magmom, ldaul, Uparam, Jparam, name="DFTCL_settings"):
-#              """
-#              Sets default input parameters for scf spin collinear calculation
-#
-#              encut (flt): planewave energy cutoff for calculation
-#              magmom (list): list of magnetic moments for each species
-#              ldaul (list): list of  orbital types for each species
-#              Uparam (list): list of U parameters for each species
-#              Jparam (list): list of J paramters for each species
-#              name (str):  name for magnetic noncolinear calculation setting [default="DFTCL_settings"]
-#
-#              """
-#
-#              cl_settings =  {"ISPIN": 2, "MAGMOM": magmom, "SAXIS": None, "LSORBIT": None, "LNONCOLLINEAR": None}
-#              dftu_settings = {"LDAU": ".TRUE.", "LDAUU": Uparam, "LDATYPE": 2, "LDAUL": ldaul, "LDAUJ": Jparam , "LMAXMIMX": 4}
-#              InputParameters.__init__(self, name=name, magnetic_settings=cl_settings, hubbard_settings=dftu_settings)
-#              self.update_electronic_settings("encut", encut)
-#
-# class DefaultMagNCLParameters(InputParameters):
-#          def __init__(self, encut, spinaxis, ldaul, Uparam, Jparam, name='DFTCL_settings'):
-#              """
-#             Sets default input parameters for scf spin non-collinear calculation
-#
-#              encut (flt): planewave energy cutoff for calculation
-#              spinaxis (ndarray): spinaxis  for calculation
-#              ldaul (list): list of  orbital types for each species
-#              Uparam (list): list of U parameters for each species
-#              Jparam (list): list of J paramters for each species
-#              name (str):  name for magnetic noncolinear calculation setting [default="DFTNCL_settings"]
-#              """
-#              ncl_settings =  {"ISPIN": 2, "MAGMOM": None, "SAXIS": spinaxis, "LSORBIT": ".TRUE.", "LNONCOLLINEAR": ".TRUE."}
-#              dftu_settings = {"LDAU": ".TRUE.", "LDAUU": Uparam, "LDATYPE": 2, "LDAUL": ldaul, "LDAUJ": Jparam , "LMAXMIX": 4}
-#              InputParameters.__init__(self, name=name, magnetic_settings=ncl_settings, hubbard_settings=dftu_settings)
-#              self.update_electronic_settings("ENCUT", encut)
+class DefaultSCFParameters(IncarSettings):
+         def __init__(self, encut):
+             """
+             Sets default input parameters for scf ground state energy calculation
 
+             **Args:
+               encut (float): planewave energy cutoff for calculation
+               name (str): name for scf setting [default="scf_settings"]
+
+             """
+             IncarSettings.__init__(self, name=name)
+             self.update_settings(setting_type="electronic", "encut", encut)
+
+class DefaultSCFUParameters(IncarSettings):
+         def __init__(self, encut, ldaul, Uparam, Jparam):
+             """
+             Sets default input parameters for scf ground state energy calculation with +U correction
+
+             encut (float): planewave energy cutoff for calculation
+             ldaul (list): list of  orbital types for each species
+             Uparam (list): list of U parameters for each species
+             Jparam (list): list of J paramters for each species
+             name (str):  name for scf+U setting [default="DFTU_settings"]
+
+             """
+
+             dftu_settings = {"ldau": ".TRUE." , "ldauu": Uparam, "ldatype": 2, "ldaul": ldaul, "ldauj": Jparam , "lmaxmix": 4}
+             IncarSettings.__init__(self, hubbard_settings=dftu_settings)
+             self.update_settings(setting_type="electronic", "encut", encut)
+
+
+class DefaultMagCLParameters(IncarSettings):
+         def __init__(self, encut, magmom, ldaul, Uparam, Jparam):
+             """
+             Sets default input parameters for scf spin collinear calculation
+
+             encut (flt): planewave energy cutoff for calculation
+             magmom (list): list of magnetic moments for each species
+             ldaul (list): list of  orbital types for each species
+             Uparam (list): list of U parameters for each species
+             Jparam (list): list of J paramters for each species
+             name (str):  name for magnetic noncolinear calculation setting [default="DFTCL_settings"]
+
+             """
+
+             cl_settings =  {"ispin": 2, "magmom": magmom, "saxis": None, "lsorbit": None, "lnoncollinear": None}
+             dftu_settings = {"ldau": ".TRUE.", "ldauu": Uparam, "ldatype": 2, "ldaul": ldaul, "ldauj": Jparam , "lmaxmix": 4}
+             IncarSettings.__init__(self, magnetic_settings=cl_settings, hubbard_settings=dftu_settings)
+             self.update_electronic_settings("encut", encut)
+
+class DefaultMagNCLParameters(InputParameters):
+         def __init__(self, encut, spinaxis, ldaul, Uparam, Jparam):
+             """
+            Sets default input parameters for scf spin non-collinear calculation
+
+             encut (flt): planewave energy cutoff for calculation
+             spinaxis (ndarray): spinaxis  for calculation
+             ldaul (list): list of  orbital types for each species
+             Uparam (list): list of U parameters for each species
+             Jparam (list): list of J paramters for each species
+             name (str):  name for magnetic noncolinear calculation setting [default="DFTNCL_settings"]
+             """
+             ncl_settings =  {"ispin": 2, "magmom": None, "saxis": spinaxis, "lsorbit": ".TRUE.", "lnoncollinear": ".TRUE."}
+             dftu_settings = {"ldau": ".TRUE.", "ldauu": Uparam, "ldatype": 2, "ldaul": ldaul, "ldauj": Jparam , "lmaxmix": 4}
+             InputParameters.__init__(self, magnetic_settings=ncl_settings, hubbard_settings=dftu_settings)
+             self.update_electronic_settings("encut", encut)
 # class PoscarSettings:
 #     def __init__(self, ):
 #         self.__structure =
