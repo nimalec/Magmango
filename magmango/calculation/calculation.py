@@ -1,4 +1,4 @@
-class SCFCalculation:
+class Calculation:
     def __init__(self, dir_name="scf_calc", path=os.getcwd(), incar, kpoints, poscar, potcar, runscript):
         """
         This is a docstring
