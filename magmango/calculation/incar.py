@@ -3,6 +3,14 @@
 The incar module allows for the initialization, modification, and managing of input/output of settings for VASP INCAR file parameters.
 The incar module allows for settings to be extracted from a provided INCAR file or to be inputed manually.
 The setting types are partitioned into: start, electronic, parallel, magnetic, ionic, hubbard, hybrid, misc.
+
+ Typical usage example:
+
+  from magmango.calculation.incar import IncarSettings
+  incar_path = "/home/directory/INCAR"
+  incar_obj = Incar(from_file = True)
+  incar_obj.incar_from_file(incar_path)
+  settings = incar_obj.get_settings(setting_type = "all")
 """
 
 import os

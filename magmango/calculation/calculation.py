@@ -3,7 +3,7 @@
 The calculation module initializes and supports the modification of the settings for a VASP calculation. This module
 also manages the job submissions and input/output of a single VASP calculation.
 
-  Typical usage example:
+ Typical usage example:
 
   import os
   from magmango.calculation.calculation import Calculation
