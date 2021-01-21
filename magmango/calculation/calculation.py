@@ -1,10 +1,12 @@
-"""Calculation module handles the setup and execution of a VASP calculation.
+"""The calculation module handles the setup and execution of a VASP calculation.
 
-The Calculation object .
+The calculation module initializes and supports the modification of the settings for a VASP calculation. This module
+also manages the job submissions and input/output of a single VASP calculation.
 
   Typical usage example:
 
   import os
+  from magmango.calculation.calculation import Calculation
   dir = os.path.join(os.getcwd(),"vasp_calc_directory")
   incar_obj = Incar()
   kpoints_obj = KPoints()
@@ -13,9 +15,9 @@ The Calculation object .
   calc = Calculation(work_dir = dir, incar =  incar_obj, kpoints = kpoints_obj, poscar_obj = poscar_obj, potcar = potcar_obj)
   calc.make_calculation()
   calc.run_calculation()
-  calc.update_run_status()
-  calc.update_tot_energy()
 """
+
+from magmango.in_out import make_incar, make_kpoints, make_poscar, make_potcar
 
 class Calculation:
         """ Summary of class.
@@ -64,25 +66,30 @@ class Calculation:
         else:
             self._path = path
 
-        if not isinstance(incar, magmango.calculation.incar.Incar):
+        if not isinstance(incar, magmango.calculation.incar.IncarSettings):
             raise TypeError("Input incar must be of type Incar!")
         else:
-            self._incar =  incar
+            self._incar = incar
 
-        if not isinstance(kpoints, magmango.calculation.kpoints.KPoints):
+        if not isinstance(kpoints, magmango.calculation.kpoints.KPointsSettings):
             raise TypeError("Input kpoints must be of type KPoints!")
         else:
-            self._kpoints =  KPoints
+            self._kpoints = kpoints
 
-        if not isinstance(poscar, magmango.calculation.incar.Poscar):
+        if not isinstance(poscar, magmango.calculation.poscar.PoscarSettings):
             raise TypeError("Input poscar must be of type Poscar"!")
         else:
-            self._poscar =  poscar
+            self._poscar = poscar
 
-        if not isinstance(potcar, magmango.calculation.incar.Potcar):
+        if not isinstance(potcar, magmango.calculation.potcar.PotcarSettings):
             raise TypeError("Input potcar must be of type Potcar!")
         else:
             self._potcar =  potcar
+
+        if not isinstance(runscript, magmango.calculation.potcar.RunscriptSettings):
+            raise TypeError("Input potcar must be of type Potcar!")
+        else:
+            self._potcar = potcar
 
         self._run_status = "not submitted"
         self._run_time = 0.0
@@ -90,103 +97,33 @@ class Calculation:
         self._mag_moment = None
 
     def make_calculation(self):
+        """ Calculation make method. Generates specified files and directories of Calculation.
+
+        Retrieves rows pertaining to the given keys from the Table instance
+        represented by table_handle. String keys will be UTF-8 encoded.
+        """
+
         os.mkdir(self._path)
-        print("Work Directory now in: " + self._workdir)
-        make_incar_h(self._workdir, self._input_settings)
+        print("Work Directory now in: " + self._path)
+        self._incar.write_file(self._path)
+        self._kpoints.write_file(self._path)
+        self._poscar.write_file(self._path)
+        self._potcar.write_file(self._path)
+        self._runscript.write_file(self._path)
 
-        if struct_path:
-            copyfile(struct_path, self._workdir+"/"+"POSCAR")
-            self._struct_path = struct_path
-        else:
-            #make_poscar_h(self._workdir, self._structure, [4], ["Mn"])
-            pass
+    def run_calculation(self):
+        # import threading, queue
+        # q = queue.Queue()
+        # def worker():
+        #     while True:
+        os.system("sbatch"+" "+self._runscript._file_name)
+        self._run_status = "submitted"
 
-        if run_script_path:
-            copyfile(run_script_path, self._workdir+"/"+"run_scf.sh")
-        else:
-            make_runscript_h(self._workdir, self._input_settings)
-
-        if k_points_path:
-            copyfile(k_points_path, self._workdir+"/"+"KPOINTS")
-            self._kpoint_path = k_points_path
-        else:
-            make_kpoints_h(self._workdir, self._kmesh)
-
-        if potcar_path:
-            copyfile(potcar_path, self._workdir+"/"+"POTCAR")
-            self._potcar_path = potcar_path
-        else:
-            make_potcar_h(self._workdir, self._pseudo_par)
-    #
-    # def run_calculation(self):
-    #
-    # def update_run_status(self):
-    #
+    #def update_run_status(self):
     # def update_tot_energy(self):
-    #
     # def update_mag_moment(self):
-    #
     # def get_incar(self):
-    #
     # def get_kpoints(self):
-    #
     # def get_poscar(self):
-    #
     # def get_potcar(self):
-    #
     # def get_runscript(self):
-
-
-
-    # def make_calculation(self, struct_path=None, run_script_path=None, k_points_path=None, potcar_path=None):
-    #  """
-    #  Sets up VASP input files and directory
-    #  **Args:
-    #  struct_path (str): path (including POSCAR file) of availible POSCAR in external directory
-    #  run_script_path (str): path (including runscript file) of availible runscript in external directory
-    #  k_points_path (str): path (including kpoints file) of availible kpoints file in external directory
-    #  """
-    #
-    #      os.mkdir(self._workdir)
-    #      print("Work Directory now in: " + self._workdir)
-    #      make_incar_h(self._workdir, self._input_settings)
-    #
-    #      if struct_path:
-    #         copyfile(struct_path, self._workdir+"/"+"POSCAR")
-    #         self._struct_path = struct_path
-    #      else:
-    #          #make_poscar_h(self._workdir, self._structure, [4], ["Mn"])
-    #          pass
-    #
-    #      if run_script_path:
-    #          copyfile(run_script_path, self._workdir+"/"+"run_scf.sh")
-    #      else:
-    #          make_runscript_h(self._workdir, self._input_settings)
-    #
-    #      if k_points_path:
-    #          copyfile(k_points_path, self._workdir+"/"+"KPOINTS")
-    #          self._kpoint_path = k_points_path
-    #      else:
-    #          make_kpoints_h(self._workdir, self._kmesh)
-    #
-    #      if potcar_path:
-    #          copyfile(potcar_path, self._workdir+"/"+"POTCAR")
-    #          self._potcar_path = potcar_path
-    #      else:
-    #          make_potcar_h(self._workdir, self._pseudo_par)
-    #
-    # def run_calculation(self):
-    #     # os.system("sbatch"+" "+self._input_settings._parallel_settings["flnm"])
-    #     # self._run_status = "submitted"
-    #
-    # def update_run_status(self):
-    #      #os.system("sbatch"+" "+self._input_settings._parallel_settings["flnm"])
-    #      #self._run_status = "submitted"
-    #
-    # def update_total_energy(self):
-    #      #os.system("sbatch"+" "+self._input_settings._parallel_settings["flnm"])
-    #      #self._run_status = "submitted"
-    #
-    # def update_mag_moment(self):
-    #     # os.system("sbatch"+" "+self._input_settings._parallel_settings["flnm"])
-    #     # self._run_status = "submitted"
