@@ -82,9 +82,9 @@ class IncarSettings:
         else:
             pass
 
-    def incar_from_file(self, incar_path):
+    def incar_from_file(self, file_path):
         """This function...."""
-        incar_dict = read_incar(incar_path) ## handles exceptions internally
+        incar_dict = read_incar(file_path) ## handles exceptions internally
         self._settings["start"] = incar_dict["start"]
         self._settings["electronic"] = incar_dict["electronic"]
         self._settings["magnetic"] = incar_dict["magnetic"]
@@ -129,10 +129,11 @@ class IncarSettings:
         value : value corresponding to updated key
         """
         setting_types = set(["start", "electronic", "magnetic", "ionic", "hubbard", "hybrid", "misc" ])
-        if setting_type in setting_types:
-            self._settings[setting_type][key] = value
+        if not setting_type in setting_types:
+            raise ValueError('Setting must be ["start", "electronic", "magnetic", "ionic", "hubbard", "hybrid", "misc" ]')
         else:
-            print("Error: Invalid setting_type!!")
+            pass
+        self._settings[setting_type][key] = value
 
     def write_file(self, file_path):
         """ Update a parameter in settings.
@@ -147,7 +148,7 @@ class IncarSettings:
         """
 
         if not os.path.isdir(file_path):
-            raise OSError('file_path does not exist!')
+            raise OSError('Specified file_path does not exist!')
         else:
             pass
 
