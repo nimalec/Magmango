@@ -23,8 +23,14 @@ class RunscriptSettings:
 
 	def update_settings(self, setting_type, key, value):
 		"""Function  """
-		# if setting_type is "run_settings":
-
+		if setting_type is "run_settings":
+			self._run_settings[key] = value
+		elif setting_type is "modules":
+			self._modules[key] = value
+		elif setting_type is "run_exec":
+			self._run_exec[key] = value
+		elif setting_type is "links":
+			self._links[key] = value
 
 	def write_file(self, file_path):
 		"""Function  """
