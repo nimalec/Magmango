@@ -1,6 +1,32 @@
 class RunscriptSettings:
-	def __init__(self, from_file=False, comment = "Gamma", npoints=0, k_pts = [2,2,2], q_shift = [0,0,0]):
-		if from_file is False:
-			self._settings = {"comment": comment, "npoints": npoints, "kpoints": k_pts, "qpoints": q_shift}
-		else:
-			pass
+	def __init__(self, from_file = False, run_settings = None, module_imports, run_exec, links = None):
+		"""set attributes
+
+		"""
+		self._run_settings  =  run_settings or {"job_name": , "partition:" , "account": , "qos": , "tpn": , "time": }
+		self._modules = module_imports or ["module unload intel/2016.4.072", "module load intel/2018.5.274.par", "module load vasp_intelmpi/5.4.4.16052018"]
+		self._run_exec = run_exec or {"exe": "'vasp_std'" , "run": "time mpirun $EXE"}
+		self._links = links
+
+	def runscript_from_file(self, file_path):
+		"""Function  """
+		settings = read_runscript(settings, file_path)
+		self._run_settings = settings["run_settings"]
+		self._modules = settings["modules"]
+		self._run_exec = settings["run_exec"]
+		self._links = settings["links"]
+
+	def get_settings(self):
+		"""Function  """
+		settings = {"run_settings": self._run_settings, "modules": self._modules, "run_exec": self._run_exec, "links": self._links}
+		return settings
+
+	def update_settings(self, setting_type, key, value):
+		"""Function  """
+		# if setting_type is "run_settings":
+
+
+	def write_file(self, file_path):
+		"""Function  """
+		settings = {"run_settings": self._run_settings, "modules": self._modules, "run_settings": self._run_settings, "links": self._links}
+		write_runscript(settings, file_path)

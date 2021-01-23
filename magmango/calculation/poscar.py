@@ -10,7 +10,7 @@ class PoscarSettings:
 		if structure:
 		    if not isinstance(structure, pymatgen.core.structure.Structure):
 	            raise TypeError('from_file must have type pymatgen.core.structure.Structure !')
-			else:
+		    else:
 				pass
 		else:
 			pass
