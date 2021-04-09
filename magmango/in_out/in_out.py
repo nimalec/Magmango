@@ -3,7 +3,6 @@ import os
 import shutil
 from pymatgen.io.vasp.inputs import Incar
 
-
 def write_runscript(work_dir, input_settings):
     """
     Generates runscript provided run settings for VASP calculation.
@@ -67,15 +66,19 @@ def write_incar(work_dir, input_settings,name="system"):
 
     f.write("\n")
     f.write("parallel"+"\n")
-    if input_settings["parallel"]["ncore"] == None:
-       pass
-    else:
-       f.write("NCORE"+"=   "+str(input_settings["parallel"]["ncore"])+"\n")
-    if input_settings["parallel"]["kpar"] == None:
-       pass
-    else:
-       f.write("KPAR"+"=   "+str(input_settings["parallel"]["kpar"])+"\n\n")
-    f.write("\n")
+    # if input_settings["parallel"] == None:
+    #     pass
+    # else:
+    #     if input_settings["parallel"]["ncore"] == None:
+    #         pass
+    #     else:
+    #        f.write("NCORE"+"=   "+str(input_settings["parallel"]["ncore"])+"\n")
+    #     if input_settings["parallel"]["kpar"] == None:
+    #         pass
+    #     else:
+    #         f.write("KPAR"+"=   "+str(input_settings["parallel"]["kpar"])+"\n\n")
+    #         f.write("\n")
+
     f.write("electronic"+"\n")
     for key, value in input_settings["electronic"].items():
         if value:
