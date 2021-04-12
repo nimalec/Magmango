@@ -3,16 +3,16 @@ import os
 import shutil
 from pymatgen.io.vasp.inputs import Incar
 
-def write_runscript(work_dir, input_settings):
+def write_runscript(file_path), run_settings):
     """
     Generates runscript provided run settings for VASP calculation.
 
     **Args:
 
     workdir (str):
-    input_settings (InputParameters):
+    run_settings (RunscriptSettings):
     """
-    run_settings = input_settings._parallel_settings
+
     fl_nm = run_settings["flnm"]
     if os.path.exists(work_dir+fl_nm) is True:
         os.remove(work_dir+fl_nm)
@@ -26,6 +26,7 @@ def write_runscript(work_dir, input_settings):
     f.write("#SBATCH --nodes="+str(run_settings["nodes"])+"\n")
     f.write("#SBATCH --ntasks-per-node=" + str(run_settings["ppn"])+"\n")
     f.write("#SBATCH --time="+run_settings["max_time"]+"\n\n")
+    f.write(run_settings["links"]+"\n\n")
     f.write("module unload intel/2016.4.072\n")
     f.write("module load intel/2018.5.274.par\n")
     f.write("module load vasp_intelmpi/5.4.4.16052018\n\n")
@@ -33,9 +34,7 @@ def write_runscript(work_dir, input_settings):
     f.write("time mpirun $EXE\n\n")
     f.write("exit 0\n\n")
     f.close()
-    shutil.move(fl_nm, work_dir)
-    if os.path.exists("__pycache__") is True:
-       os.system("rm -r __pycache__")
+
 
 def write_incar(work_dir, input_settings,name="system"):
     """

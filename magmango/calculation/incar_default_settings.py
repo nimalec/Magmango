@@ -49,8 +49,8 @@ class DefaultMagCLParameters(IncarSettings):
              IncarSettings.__init__(self, magnetic_settings=cl_settings, hubbard_settings=dftu_settings)
              self.update_electronic_settings("encut", encut)
 
-class DefaultMagNCLParameters(InputParameters):
-         def __init__(self, encut, spinaxis, ldaul, Uparam, Jparam):
+class DefaultMagNCLParameters(IncarSettings):
+         def __init__(self, spinaxis, encut, ldaul, Uparam, Jparam):
              """
             Sets default input parameters for scf spin non-collinear calculation
 
@@ -63,5 +63,5 @@ class DefaultMagNCLParameters(InputParameters):
              """
              ncl_settings =  {"ispin": 2, "magmom": None, "saxis": spinaxis, "lsorbit": ".TRUE.", "lnoncollinear": ".TRUE."}
              dftu_settings = {"ldau": ".TRUE.", "ldauu": Uparam, "ldatype": 2, "ldaul": ldaul, "ldauj": Jparam , "lmaxmix": 4}
-             InputParameters.__init__(self, magnetic_settings=ncl_settings, hubbard_settings=dftu_settings)
+             IncarSettings.__init__(self, magnetic_settings=ncl_settings, hubbard_settings=dftu_settings)
              self.update_electronic_settings("encut", encut)

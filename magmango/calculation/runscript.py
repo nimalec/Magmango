@@ -1,9 +1,9 @@
 class RunscriptSettings:
 	def __init__(self, from_file = False, run_settings = None, module_imports, run_exec, links = None):
 		"""set attributes
-
 		"""
-		self._run_settings  =  run_settings or {"job_name": , "partition:" , "account": , "qos": , "tpn": , "time": }
+
+		self._run_settings  =  run_settings or {"job_name": "name" , "partition": "etna" , "account": "nimalec", "qos": , "tpn": , "time":  }
 		self._modules = module_imports or ["module unload intel/2016.4.072", "module load intel/2018.5.274.par", "module load vasp_intelmpi/5.4.4.16052018"]
 		self._run_exec = run_exec or {"exe": "'vasp_std'" , "run": "time mpirun $EXE"}
 		self._links = links
@@ -30,9 +30,9 @@ class RunscriptSettings:
 		elif setting_type is "run_exec":
 			self._run_exec[key] = value
 		elif setting_type is "links":
-			self._links[key] = value
+			self._link[key]= value
 
 	def write_file(self, file_path):
 		"""Function  """
 		settings = {"run_settings": self._run_settings, "modules": self._modules, "run_settings": self._run_settings, "links": self._links}
-		write_runscript(settings, file_path)
+		write_runscript(file_path, settings)

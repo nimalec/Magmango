@@ -37,7 +37,7 @@ class Calculation:
             _mag_moment:
         """
 
-    def __init__(self, dir_name, work_dir, incar, kpoints, poscar, potcar, runscript):
+    def __init__(self, work_dir, incar, kpoints, poscar, potcar, runscript):
         """ Calculation constructor method.
 
         Retrieves rows pertaining to the given keys from the Table instance
@@ -57,14 +57,13 @@ class Calculation:
             runscript:
                 Description of ...
         """
-        if not isinstance(dir_name, str) and not isinstance(work_dir, str):
+        if not isinstance(work_dir, str):
             raise TypeError("dir_name or work_dir must be type str!")
 
-        path = os.path.join(work_dir, dir_name)
         if not os.path.isdir(work_dir):
-            raise OSError("The work directory path" + " " work_dir "does not exist! Please choose another directory.")
+            raise OSError("The work directory path" + " " + work_dir + "does not exist! Please choose another directory.")
         else:
-            self._path = path
+            self._path = work_dir
 
         if not isinstance(incar, magmango.calculation.incar.IncarSettings):
             raise TypeError("Input incar must be of type Incar!")
@@ -86,15 +85,15 @@ class Calculation:
         else:
             self._potcar =  potcar
 
-        if not isinstance(runscript, magmango.calculation.potcar.RunscriptSettings):
-            raise TypeError("Input potcar must be of type Potcar!")
+        if not isinstance(runscript, magmango.calculation.runscript.RunscriptSettings):
+            raise TypeError("Input runscript must have type RunscriptSettings!")
         else:
-            self._potcar = potcar
+            self._runscript = runscript
 
         self._run_status = "not submitted"
-        self._run_time = 0.0
-        self._tot_energy = None
-        self._mag_moment = None
+        #self._run_time = 0.0
+        #self._tot_energy = None
+        #self._mag_moment = None
 
     def make_calculation(self):
         """ Calculation make method. Generates specified files and directories of Calculation.
@@ -117,7 +116,7 @@ class Calculation:
         # def worker():
         #     while True:
         os.system("sbatch"+" "+self._runscript._file_name)
-        self._run_status = "submitted"
+        #self._run_status = "submitted"
 
     #def update_run_status(self):
     # def update_tot_energy(self):
