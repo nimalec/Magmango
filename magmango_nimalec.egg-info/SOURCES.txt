@@ -41,10 +41,3 @@ magmango_nimalec.egg-info/PKG-INFO
 magmango_nimalec.egg-info/SOURCES.txt
 magmango_nimalec.egg-info/dependency_links.txt
 magmango_nimalec.egg-info/top_level.txt
-tests/__init__.py
-tests/analysis/__init__.py
-tests/machine/__init__.py
-tests/math/__init__.py
-tests/structure/__init__.py
-tests/workflow/__init__.py
-tests/workflow/calculation_settings.py

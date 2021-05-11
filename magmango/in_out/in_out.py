@@ -241,7 +241,7 @@ def read_incar(incar_path):
     dict = incar.as_dict()
     dict.pop("@class")
     dict.pop("@module")
-    start_settings = set(["nwrite", "istart", "iniwav", "icharg", "nelect", "icorelevel", "loptics", "isym", "lelf", "lvhar", "rwigs", "lvtof", "nbands", "lwave"])
+    start_settings = set(["nwrite", "istart", "iniwav", "icharg", "nelect", "icorelevel", "loptics", "isym", "lelf", "lvhar", "rwigs", "lvtof", "nbands"])
     electronic_settings = set(["prec", "algo", "encut", "nelm", "nelmin", "gga", "ediff", "ismear", "sigma", "lasph", "lreal", "addgrid", "maxmix", "bmix"])
     magnetic_settings = set(["magmom", "ispin", "nupdown", "lsorbit", "saxis", "lnoncollinear"])
     hubbard_settings  = set(["ldau", "ldauu", "ldatype", "ldaul", "ldauj", "lmaxmix"])

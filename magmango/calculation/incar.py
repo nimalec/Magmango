@@ -93,6 +93,7 @@ class IncarSettings:
         self._settings["hybrid"] = incar_dict["hybrid"]
         self._settings["misc"] = incar_dict["misc"]
 
+
     def get_settings(self, setting_type):
         """ Retrieves settings.
 
