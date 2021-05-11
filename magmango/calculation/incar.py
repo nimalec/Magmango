@@ -51,22 +51,22 @@ class IncarSettings:
                 Description of ...
         """
 
-        if not isinstance(from_file, bool):
-            raise TypeError('from_file must be True or False!')
-        else:
-            pass
-        if not isinstance(start_settings, dict):
-            raise TypeError('start_settings must be a dictionary!')
-        if not isinstance(parallel_settings, dict):
-            raise TypeError('parallel_settings must be a dictionary!')
-        if not isinstance(magnetic_settings, dict):
-            raise TypeError('magnetic_settings must be a dictionary!')
-        if not isinstance(ionic_settings, dict):
-            raise TypeError('ionic_settings must be a dictionary!')
-        if not isinstance(hybrid_settings, dict):
-            raise TypeError('hybrid_settings must be a dictionary!')
-        if not isinstance(misc_settings, dict):
-            raise TypeError('misc_settings must be a dictionary!')
+        # if not isinstance(from_file, bool):
+        #     raise TypeError('from_file must be True or False!')
+        # else:
+        #     pass
+        # if not isinstance(start_settings, dict):
+        #     raise TypeError('start_settings must be a dictionary!')
+        # if not isinstance(parallel_settings, dict):
+        #     raise TypeError('parallel_settings must be a dictionary!')
+        # if not isinstance(magnetic_settings, dict):
+        #     raise TypeError('magnetic_settings must be a dictionary!')
+        # if not isinstance(ionic_settings, dict):
+        #     raise TypeError('ionic_settings must be a dictionary!')
+        # if not isinstance(hybrid_settings, dict):
+        #     raise TypeError('hybrid_settings must be a dictionary!')
+        # if not isinstance(misc_settings, dict):
+        #     raise TypeError('misc_settings must be a dictionary!')
 
         self._settings = {}
         if not from_file:

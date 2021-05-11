@@ -34,7 +34,7 @@ class MagneticAnisotropyFlow:
              ncl_setts.update_settings("magnetic", "SAXIS", spin)
              ncl_dir = os.path.join(workdir ,"scf_ncl" ,"scf_"+str(itr))
              ncl_calc = Calculation(ncl_dir, ncl_setts, self._kpoints, self._poscar, self._potcar, self._runscript)
-             ncl_calc._runscript.update_settings("links","link1", lnk_line)
+             ncl_calc._runscript.update_settings("links", "link1", lnk_line)
              self._noncollinear_calcs.append(ncl_calc)
              itr += 1
 

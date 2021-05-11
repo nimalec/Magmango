@@ -3,7 +3,7 @@ import os
 import shutil
 from pymatgen.io.vasp.inputs import Incar
 
-def write_runscript(file_path), run_settings):
+def write_runscript(file_path, run_settings):
     """
     Generates runscript provided run settings for VASP calculation.
 
@@ -47,11 +47,12 @@ def write_incar(work_dir, input_settings,name="system"):
     """
 
     fl_nm = "INCAR"
-    pth = os.path.join(os.path.dirname(work_dir),"INCAR")
-    if os.path.exists(pth) is True:
-        os.remove(pth)
-    else:
-        pass
+    pth = os.path.join(work_dir,"INCAR")
+    print(pth)
+    # if os.path.exists(pth) is True:
+    #     os.remove(pth)
+    # else:
+    #     pass
     f=open(pth, "w")
 
     f.write("SYSTEM=   "+name+"\n")
@@ -150,8 +151,7 @@ def write_incar(work_dir, input_settings,name="system"):
         f.write("\n")
 
     f.close()
-    if os.path.exists("__pycache__") is True:
-      os.system("rm -r __pycache__")
+
 
 def write_potcar(work_dir, pseudo_par):
     """
