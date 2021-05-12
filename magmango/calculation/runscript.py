@@ -1,15 +1,17 @@
 class RunscriptSettings:
-	def __init__(self, from_file = False, run_settings = None, module_imports, run_exec, links = None):
+   def __init__(self, run_settings, module_imports, run_exec, links):
 		"""set attributes
 		"""
+      self._run_settings = run_settings
+      self._modules = module_imports
+      self._run_exec = run_exec
+      self._links  = links
+		#self._run_settings  =  run_settings or {"job_name": "scf_calc" , "partition": "etna" , "account": "nimalec", "qos": , "tpn": , "time":  }
+		#self._modules = module_imports or ["module unload intel/2016.4.072", "module load intel/2018.5.274.par", "module load vasp_intelmpi/5.4.4.16052018"]
+		#self._run_exec = run_exec or {"exe": "'vasp_std'" , "run": "time mpirun $EXE"}
+		#self._links = links
 
-		self._run_settings  =  run_settings or {"job_name": "name" , "partition": "etna" , "account": "nimalec", "qos": , "tpn": , "time":  }
-		self._modules = module_imports or ["module unload intel/2016.4.072", "module load intel/2018.5.274.par", "module load vasp_intelmpi/5.4.4.16052018"]
-		self._run_exec = run_exec or {"exe": "'vasp_std'" , "run": "time mpirun $EXE"}
-		self._links = links
-
-	def runscript_from_file(self, file_path):
-		"""Function  """
+	def runscript_from_file(self, file_path): 
 		settings = read_runscript(settings, file_path)
 		self._run_settings = settings["run_settings"]
 		self._modules = settings["modules"]
