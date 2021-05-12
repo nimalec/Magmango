@@ -32,7 +32,6 @@ magmango/tests/test_mae.py
 magmango/tests/test_poscar.py
 magmango/tests/test_potcar.py
 magmango/tests/test_runscript.py
-magmango/tests/test_scf_cl.py
 magmango/workflow/__init__.py
 magmango/workflow/calculation.py
 magmango/workflow/calculation_settings.py

@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import shutil
-from pymatgen.io.vasp.inputs import Incar
+from pymatgen.io.vasp.inputs import Incar, Kpoints
 
 def write_runscript(file_path, run_settings):
     """
@@ -173,68 +173,72 @@ def write_potcar(work_dir, pseudo_par):
     os.system("cat"+files+">> POTCAR")
     shutil.move("POTCAR", work_dir)
 
-def write_poscar(work_dir, structure, number, species, name=None):
-    """
-    Generates VASP POSCAR file for VASP calculation.
+# def write_poscar(work_dir, structure, number, species, name=None):
+#     """
+#     Generates VASP POSCAR file for VASP calculation.
+#
+#     **Args:
+#
+#     structure (Structure):
+#     workdir (str):
+#     """
+#     sites = structure._sites
+#     lattice = structure._lattice
+#     name = name or structure._name
+#     number = [str(num) for num in number]
+#     species_line = " ".join(species)
+#     number_line = " ".join(number)
+#
+#     fl_nm = "POSCAR"
+#     if os.path.exists(work_dir+"/"+fl_nm) is True:
+#         os.remove(work_dir+"/"+fl_nm)
+#
+#     f=open(fl_nm, "w+")
+#     f.write(name+"\n")
+#     f.write(str(1)+"\n")
+#     f.write(str(lattice[0][0])+"  "+str(lattice[0][1])+"  "+str(lattice[0][2])+"\n")
+#     f.write(str(lattice[1][0])+"  "+str(lattice[1][1])+"  "+str(lattice[1][2])+"\n")
+#     f.write(str(lattice[2][0])+"  "+str(lattice[2][1])+"  "+str(lattice[2][2])+"\n")
+#     f.write(species_line+"\n")
+#     f.write(number_line+"\n")
+#     f.write("Direct"+"\n")
+#     for site in sites:
+#         coord = site._coord
+#         coord_line = str(coord[0])+"  "+str(coord[1])+"  "+str(coord[2])+"\n"
+#         f.write(coord_line)
+#
+#     f.close()
+#     shutil.move("POSCAR", work_dir)
+#     if os.path.exists("__pycache__") is True:
+#        os.system("rm -r __pycache__")
 
-    **Args:
+# def write_kpoints(work_dir, kmesh, qshift=None):
+#     """
+#     Generates VASP POSCAR file for VASP calculation.
+#
+#     **Args:
+#     workdir (str):
+#     kmesh (list):
+#     qmesh (list):
+#     """
+#     fl_nm = "KPOINTS"
+#     f=open(work_dir+"/"+fl_nm, "w+")
+#     f.write("Automatic mesh \n")
+#     f.write(str(0)+"\n")
+#     f.write("Gamma"+"\n")
+#     f.write(str(kmesh[0])+"  "+str(kmesh[1])+"  "+str(kmesh[2])+"\n")
+#     if qshift:
+#        f.write(str(qmesh[0])+"  "+str(qmesh[1])+"  "+str(qmesh[2])+"\n")
+#     else:
+#         f.write(str(0)+"  "+str(0)+"  "+str(0)+"\n")
+#     f.close()
+#     if os.path.exists("__pycache__") is True:
+#        os.system("rm -r __pycache__")
 
-    structure (Structure):
-    workdir (str):
-    """
-    sites = structure._sites
-    lattice = structure._lattice
-    name = name or structure._name
-    number = [str(num) for num in number]
-    species_line = " ".join(species)
-    number_line = " ".join(number)
-
-    fl_nm = "POSCAR"
-    if os.path.exists(work_dir+"/"+fl_nm) is True:
-        os.remove(work_dir+"/"+fl_nm)
-
-    f=open(fl_nm, "w+")
-    f.write(name+"\n")
-    f.write(str(1)+"\n")
-    f.write(str(lattice[0][0])+"  "+str(lattice[0][1])+"  "+str(lattice[0][2])+"\n")
-    f.write(str(lattice[1][0])+"  "+str(lattice[1][1])+"  "+str(lattice[1][2])+"\n")
-    f.write(str(lattice[2][0])+"  "+str(lattice[2][1])+"  "+str(lattice[2][2])+"\n")
-    f.write(species_line+"\n")
-    f.write(number_line+"\n")
-    f.write("Direct"+"\n")
-    for site in sites:
-        coord = site._coord
-        coord_line = str(coord[0])+"  "+str(coord[1])+"  "+str(coord[2])+"\n"
-        f.write(coord_line)
-
-    f.close()
-    shutil.move("POSCAR", work_dir)
-    if os.path.exists("__pycache__") is True:
-       os.system("rm -r __pycache__")
-
-def write_kpoints(work_dir, kmesh, qshift=None):
-    """
-    Generates VASP POSCAR file for VASP calculation.
-
-    **Args:
-    workdir (str):
-    kmesh (list):
-    qmesh (list):
-    """
-    fl_nm = "KPOINTS"
-    f=open(work_dir+"/"+fl_nm, "w+")
-    f.write("Automatic mesh \n")
-    f.write(str(0)+"\n")
-    f.write("Gamma"+"\n")
-    f.write(str(kmesh[0])+"  "+str(kmesh[1])+"  "+str(kmesh[2])+"\n")
-    if qshift:
-       f.write(str(qmesh[0])+"  "+str(qmesh[1])+"  "+str(qmesh[2])+"\n")
-    else:
-        f.write(str(0)+"  "+str(0)+"  "+str(0)+"\n")
-    f.close()
-    if os.path.exists("__pycache__") is True:
-       os.system("rm -r __pycache__")
-
+def write_kpoints(file_path, kpts_dict):
+    kpt_obj = Kpoints()
+    kpt_obj.from_dict(kpts_dict)
+    kpt_obj.write_file(file_path)
 
 def read_incar(incar_path):
     incar = Incar.from_file(incar_path)
@@ -285,6 +289,12 @@ def read_incar(incar_path):
     settings["hybrid"] = hybrid_dict
     settings["misc"] = misc_dict
     return settings
+
+def read_kpoints(incar_path):
+    kpts = Kpoints(incar_path)
+    kpt_dict = kpts.as_dict()
+    return kpt_dict
+
 
 #def get_total_energy(file):
 #def get_mag_moment(file):

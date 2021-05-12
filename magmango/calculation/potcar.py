@@ -15,44 +15,50 @@ The setting types are partitioned into: start, electronic, parallel, magnetic, i
 import os
 import shutil
 class PotcarSettings:
-	def __init__(self, from_file = False, file_paths = None):
+	def __init__(self, file_paths = None):
 
         self._outfile_path = None
-		if not from_file and file_paths is None:
-			raise ValueError('Must specify either a POSCAR file path or POSCAR file_paths')
-		elif file_paths:
-			for path in file_paths:
-				if not os.path.isfile(path):
-					raise OSError(path + ' ' + 'does not exist!')
-				else:
-					continue
-		else:
-			pass
-
+		# if not from_file and file_paths is None:
+		# 	raise ValueError('Must specify either a POSCAR file path or POSCAR file_paths')
+		# elif file_paths:
+		# 	for path in file_paths:
+		# 		if not os.path.isfile(path):
+		# 			raise OSError(path + ' ' + 'does not exist!')
+		# 		else:
+		# 			continue
+		# else:
+		# 	pass
 		self._file_paths = file_paths
 
 	def from_file(self, file_path):
-		"""Function... """
-		if not os.path.isfile(file_path):
-		    raise OSError(file_path+ ' ' + 'does not exist!')
-		else:
-	        pass
+		# """Function... """
+		# if not os.path.isfile(file_path):
+		#     raise OSError(file_path+ ' ' + 'does not exist!')
+		# else:
+	    #     pass
 		self._outfile_path = file_path
 
 	def write_file(self, file_path):
-		"""Function... """
-
-		if not os.path.isdir(file_path):
-		    raise OSError(file_path+ ' ' + 'does not exist!')
-		else:
-	        pass
-
-		if self._outfile_path:
-			shutil.copyfile(self._outfile_path, file_path)
-		else:
-			potcar_path = os.path.join(file_path, "POTCAR")
-			with open(potcar_path, 'w') as out_file:
-			    for file in self._file_paths:
-					with open(file) as in_file:
-						for line in in_file:
-							out_file.write(line)
+		# """Function... """
+        #
+		# if not os.path.isdir(file_path):
+		#     raise OSError(file_path+ ' ' + 'does not exist!')
+		# else:
+	    #     pass
+       if self._file_paths:
+          os_command = "cat "
+          for file in self._file_paths:
+             os_command += file + " "
+          os_command = os_command + " >> " + file_path
+          os.system(os_command)
+       else:
+          pass
+		# if self._outfile_path:
+		# 	shutil.copyfile(self._outfile_path, file_path)
+		# else:
+		# 	potcar_path = os.path.join(file_path, "POTCAR")
+		# 	with open(potcar_path, 'w') as out_file:
+		# 	    for file in self._file_paths:
+		# 			with open(file) as in_file:
+		# 				for line in in_file:
+		# 					out_file.write(line)

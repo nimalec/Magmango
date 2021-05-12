@@ -12,8 +12,9 @@ The setting types are partitioned into: start, electronic, parallel, magnetic, i
   incar_obj.incar_from_file(incar_path)
   settings = incar_obj.get_settings(setting_type = "all")
 """
-from magmango.in_out.in_out import write_kpoints
-class KPointsSettings:
+import os
+from magmango.in_out.in_out import read_kpoints, write_kpoints
+class KpointsSettings:
    """ Summary of class.
 
         Longer class info.
@@ -22,25 +23,14 @@ class KPointsSettings:
             _settings:
    """
 
-   def __init__(self, from_file = False, comment = "Gamma", npoints = 0, k_pts = [2,2,2], q_shift = [0,0,0]):
+   def __init__(self, settings = None):
         """ IncarSettings constructor method.
 
         Retrieves rows pertaining to the given keys from the Table instance
         represented by table_handle. String keys will be UTF-8 encoded.
-
-        Args:
-            from_file:
-                Description of ....
-            comment:
-                Description of ...
-            npoints:
-                Descritpion of ...
-            k_pts:
-                Description of ...
-            q_shift:
-                Description of ...
         """
-        self._settings = {"comment": None, "npoints": None, "kpoints": None , "qpoints": None}
+        self._settings = settings
+        self._file_path = None
         # if not isinstance(from_file, bool):
         #     raise TypeError('from_file must be True or False!')
         # else:
@@ -71,22 +61,15 @@ class KPointsSettings:
    def kpoints_from_file(self, file_path):
       """This function...."""
       kpoints_dict = read_kpoints(file_path)
-      self._settings["comment"] = kpoints_dict["comment"]
-      self._settings["npoints"] = kpoints_dict["npoints"]
-      self._settings["kpoints"] = kpoints_dict["kpoints"]
-      self._settings["qpoints"] = kpoints_dict["qpoints"]
-
-   def get_settings(self):
-      """This function...."""
-      return self._settings
+      self._settings =  kpoints_dict
+      self._file_path = file_path
 
    def update_settings(self, key, value):
       """This function...."""
-      setting_types = set(["comment", "npoints", "kpoints", "qpoints"])
-      if not setting_type in setting_types:
-         raise ValueError('Setting must be ["comment", "npoints", "kpoints", "qpoints"]')
-      else:
-         pass
+      # if not setting_type in setting_types:
+      #    raise ValueError('Setting must be ["comment", "npoints", "kpoints", "qpoints"]')
+      # else:
+      #    pass
       self._settings[key] = value
 
    def write_file(self, file_path):
@@ -101,11 +84,9 @@ class KPointsSettings:
         value : value corresponding to updated key
         """
 
-      if not os.path.isdir(file_path):
-         raise OSError('Specified file_path does not exist!')
-      else:
-         pass
-
-      path = os.path.join(file_path,"KPOINTS")
-      write_kpoints(path, self._settings)
-      print("KPOINTS file written in"+" "+ file_path)
+      # if not os.path.isdir(file_path):
+      #    raise OSError('Specified file_path does not exist!')
+      # else:
+      #    pass
+      write_kpoints(file_path, self._settings)
+      self._file_path = file_path
