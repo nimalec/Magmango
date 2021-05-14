@@ -27,9 +27,11 @@ def write_runscript(file_path, run_settings):
     f.write("#SBATCH --ntasks-per-node=" + str(run_settings["ppn"])+"\n")
     f.write("#SBATCH --time="+run_settings["max_time"]+"\n\n")
     f.write(run_settings["links"]+"\n\n")
-    f.write("module unload intel/2016.4.072\n")
-    f.write("module load intel/2018.5.274.par\n")
-    f.write("module load vasp_intelmpi/5.4.4.16052018\n\n")
+
+    ##  Loop through all modules if they exist
+    # f.write("module unload intel/2016.4.072\n")
+    # f.write("module load intel/2018.5.274.par\n")
+    # f.write("module load vasp_intelmpi/5.4.4.16052018\n\n")
     f.write("EXE="+"'"+run_settings["exec"]+"'"+"\n\n")
     f.write("time mpirun $EXE\n\n")
     f.write("exit 0\n\n")
