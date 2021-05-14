@@ -1,0 +1,36 @@
+start Parameters
+  NWRITE     = 2     
+  ISTART     = 1     
+  INIWAV     = 1     
+  NBANDS = 768
+  NELECT = 1185  
+
+parallelisation
+  NCORE  = 8        
+  KPAR   = 4        
+  
+electronic relaxation
+  PREC    = Accurate 
+  ALGO    = Normal   
+  ENCUT   = 750      
+  NELM    = 200      
+  EDIFF   = 1E-06    
+  GGA     = PS       
+  LASPH   = .TRUE.  
+  LREAL   = Auto    
+
+ionic relaxation
+  EDIFFG = -0.02    
+  IBRION = 1       
+  SIGMA = 0.01
+
+magnetic
+  ISPIN   = 2       
+
+dft+u
+  LDAU    = .TRUE.  
+  LDATYPE = 2      
+  LDAUL   = -1 -1 -1 2   
+  LDAUU   = 0 0 0 4     
+  LDAUJ   = 0 0 0 0    
+  LMAXMIX = 4         
