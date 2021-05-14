@@ -3,7 +3,7 @@ import os
 import shutil
 from pymatgen.io.vasp.inputs import Incar, Kpoints
 
-def write_runscript(file_path, run_settings):
+def write_runscript(file_path, settings):
     """
     Generates runscript provided run settings for VASP calculation.
 
@@ -13,20 +13,20 @@ def write_runscript(file_path, run_settings):
     run_settings (RunscriptSettings):
     """
 
-    fl_nm = run_settings["flnm"]
-    if os.path.exists(work_dir+fl_nm) is True:
-        os.remove(work_dir+fl_nm)
+    #fl_nm = run_settings["flnm"]
+    # if os.path.exists(work_dir+fl_nm) is True:
+    #     os.remove(work_dir+fl_nm)
 
-    f=open(fl_nm, "w")
+    f=open(file_path, "w")
     f.write("#!/bin/bash" + "\n\n")
-    f.write("#SBATCH --job-name="+run_settings["job_name"]+"\n")
-    f.write("#SBATCH --partition="+run_settings["partition"]+"\n")
-    f.write("#SBATCH --account="+run_settings["machine"]+"\n")
-    f.write("#SBATCH --qos=normal \n")
-    f.write("#SBATCH --nodes="+str(run_settings["nodes"])+"\n")
-    f.write("#SBATCH --ntasks-per-node=" + str(run_settings["ppn"])+"\n")
-    f.write("#SBATCH --time="+run_settings["max_time"]+"\n\n")
-    f.write(run_settings["links"]+"\n\n")
+    f.write("#SBATCH --job-name="+settings["run_settings"]["job_name"]+"\n")
+    #f.write("#SBATCH --partition="+settings["partition"]+"\n")
+    #f.write("#SBATCH --account="+settings["machine"]+"\n")
+    f.write("#SBATCH --qos="+settings["run_settings"]["qos"]+"\n")
+    f.write("#SBATCH --nodes="+str(settings["run_settings"]["nodes"])+"\n")
+    #f.write("#SBATCH --ntasks-per-node=" + str(run_settings["ppn"])+"\n")
+    f.write("#SBATCH --time="+settings["run_settings"]["max_time"]+"\n\n")
+    #f.write(settings["links"]+"\n\n")
 
     ##  Loop through all modules if they exist
     # f.write("module unload intel/2016.4.072\n")
