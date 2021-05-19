@@ -1,9 +1,9 @@
 import numpy as np
 import os
 import shutil
-from pymatgen.io.vasp.inputs import Incar, Kpoints
+from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar
 
-def write_runscript(file_path, settings):
+def write_runscript(work_dir, settings):
     """
     Generates runscript provided run settings for VASP calculation.
 
@@ -13,32 +13,36 @@ def write_runscript(file_path, settings):
     run_settings (RunscriptSettings):
     """
 
-    #fl_nm = run_settings["flnm"]
-    # if os.path.exists(work_dir+fl_nm) is True:
-    #     os.remove(work_dir+fl_nm)
-
+    file_path = os.path.join(work_dir,"run.sh")
     f=open(file_path, "w")
     f.write("#!/bin/bash" + "\n\n")
-    f.write("#SBATCH --job-name="+settings["run_settings"]["job_name"]+"\n")
-    #f.write("#SBATCH --partition="+settings["partition"]+"\n")
-    #f.write("#SBATCH --account="+settings["machine"]+"\n")
-    f.write("#SBATCH --qos="+settings["run_settings"]["qos"]+"\n")
-    f.write("#SBATCH --nodes="+str(settings["run_settings"]["nodes"])+"\n")
-    #f.write("#SBATCH --ntasks-per-node=" + str(run_settings["ppn"])+"\n")
-    f.write("#SBATCH --time="+settings["run_settings"]["max_time"]+"\n\n")
-    #f.write(settings["links"]+"\n\n")
+    for key, value in settings["run_settings"]:
+        f.write("#SBATCH --"+key+"="+settings["run_settings"][value]+"\n")
+    f.write("\n \n")
 
-    ##  Loop through all modules if they exist
-    # f.write("module unload intel/2016.4.072\n")
-    # f.write("module load intel/2018.5.274.par\n")
-    # f.write("module load vasp_intelmpi/5.4.4.16052018\n\n")
-    f.write("EXE="+"'"+run_settings["exec"]+"'"+"\n\n")
-    f.write("time mpirun $EXE\n\n")
+    if setting["modules"]:
+        for item in settings["modules"]:
+            f.write(item+"\n")
+        f.write("\n \n")
+    else:
+       pass
+
+    f.write("\n \n")
+    f.write("EXE= '"+settings["run_settings"]["execute"]+"'")
+    f.write("\n \n")
+
+    if setting["links"]:
+        for item in setting["links"]:
+            f.write(item+"\n")
+        f.write("\n \n")
+    else:
+       pass
+    f.write("time mpirun $EXE \n\n")
     f.write("exit 0\n\n")
     f.close()
+    print("Runscript file printed in: " + file_path)
 
-
-def write_incar(work_dir, input_settings,name="system"):
+def write_incar(work_dir, input_settings):
     """
     Generates VASP INCAR file for VASP calculation.
 
@@ -48,114 +52,12 @@ def write_incar(work_dir, input_settings,name="system"):
     input_settings (InputParameters):
     """
 
-    fl_nm = "INCAR"
-    pth = os.path.join(work_dir,"INCAR")
-    print(pth)
-    # if os.path.exists(pth) is True:
-    #     os.remove(pth)
-    # else:
-    #     pass
-    f=open(pth, "w")
+    file_path = os.path.join(work_dir,"INCAR")
+    incar = Incar().from_dict(file_path)
+    incar.write_file(file_path)
+    print("INCAR file printed in: " + file_path)
 
-    f.write("SYSTEM=   "+name+"\n")
-    f.write("start parameters"+"\n")
-
-    for key, value in input_settings["start"].items():
-        if value:
-            f.write(key.upper()+"=   "+str(value)+"\n")
-        else:
-            pass
-
-    f.write("\n")
-    f.write("parallel"+"\n")
-    # if input_settings["parallel"] == None:
-    #     pass
-    # else:
-    #     if input_settings["parallel"]["ncore"] == None:
-    #         pass
-    #     else:
-    #        f.write("NCORE"+"=   "+str(input_settings["parallel"]["ncore"])+"\n")
-    #     if input_settings["parallel"]["kpar"] == None:
-    #         pass
-    #     else:
-    #         f.write("KPAR"+"=   "+str(input_settings["parallel"]["kpar"])+"\n\n")
-    #         f.write("\n")
-
-    f.write("electronic"+"\n")
-    for key, value in input_settings["electronic"].items():
-        if value:
-            f.write(key.upper()+"=   "+str(value)+"\n")
-        else:
-            pass
-    f.write("\n")
-
-    if input_settings["ionic"]:
-        f.write("ionic"+"\n")
-        for key, value in input_settings["ionic"].items():
-            if value:
-                f.write(key.upper()+"=   "+str(value)+"\n")
-            else:
-                pass
-        f.write("\n")
-
-    if input_settings["magnetic"]:
-        f.write("magnetic"+"\n")
-        for key, value in input_settings["magnetic"].items():
-            if value:
-                if key == "saxis":
-                    saxis = value
-                    saxis_line = str(saxis[0])+" "+str(saxis[1])+" "+str(saxis[2])
-                    f.write(key.upper()+"=   "+saxis_line+"\n")
-                elif key.lower() == "magmom":
-                   line = " "
-                   magmom = value
-                   for i in magmom:
-                     line += str(i) + " "
-                   #magmom_line = str(magmom[0])+" "+str(magmom[1])+" "+str(magmom[2])
-                   f.write(key.upper()+"=   "+line+"\n")
-                else:
-                   f.write(key.upper()+"=   "+str(value)+"\n")
-            else:
-                pass
-
-    # if input_settings._hybrid_settings:
-    #     f.write("hybrid"+"\n")
-    #     for key in input_settings._hybrid_settings:
-    #         if input_settings._hybrid_settings[key]:
-    #             f.write(key+"="+str(input_settings._hybrid_settings[key])+"\n")
-    #         else:
-    #             pass
-    #     f.write("\n")
-
-    f.write("\n")
-    if input_settings["hubbard"]:
-        f.write("hubbard"+"\n")
-        for key, value in input_settings["hubbard"].items():
-            if value:
-                if key.lower() == "ldaul" or key.lower() == "ldauj" or key.lower()=="ldauu":
-                    line = ""
-                    for i in value:
-                        line += str(i)+ " "
-                    f.write(key.upper()+"=   "+line+"\n")
-                else:
-                    f.write(key.upper()+"=   "+str(value)+"\n")
-            else:
-                pass
-        f.write("\n")
-
-    if input_settings["misc"]:
-        f.write("misc"+"\n")
-        for key, value in input_settings["misc"].items():
-            if value:
-                f.write(key.upper()+"=   "+str(value)+"\n")
-            else:
-                pass
-        f.write("\n")
-
-    f.close()
-
-
-def write_potcar(work_dir, pseudo_par):
+def write_potcar(work_dir, pseudo_dir, species):
     """
     Generates VASP POTCAR file for VASP calculation.
 
@@ -164,141 +66,44 @@ def write_potcar(work_dir, pseudo_par):
     workdir (str):
     pseudo_par (dict):
     """
-    pseudo_dir = pseudo_par["directory"]
-    pseudos = pseudo_par["flavor"]
-
     paths = []
-    for pot in pseudos:
-        pseudo_path = pseudo_dir + pot
+    for pot in species:
+        pseudo_path = os.path.join(work_dir +"/"+ pot, "POTCAR")
         paths.append(pseudo_path)
     files = " ".join(paths)
     os.system("cat"+files+">> POTCAR")
-    shutil.move("POTCAR", work_dir)
+    shutil.move("POTCAR", work_dir+"/POTCAR")
+    print("POTCAR file printed in: " work_dir+"/POTCAR")
 
-# def write_poscar(work_dir, structure, number, species, name=None):
-#     """
-#     Generates VASP POSCAR file for VASP calculation.
-#
-#     **Args:
-#
-#     structure (Structure):
-#     workdir (str):
-#     """
-#     sites = structure._sites
-#     lattice = structure._lattice
-#     name = name or structure._name
-#     number = [str(num) for num in number]
-#     species_line = " ".join(species)
-#     number_line = " ".join(number)
-#
-#     fl_nm = "POSCAR"
-#     if os.path.exists(work_dir+"/"+fl_nm) is True:
-#         os.remove(work_dir+"/"+fl_nm)
-#
-#     f=open(fl_nm, "w+")
-#     f.write(name+"\n")
-#     f.write(str(1)+"\n")
-#     f.write(str(lattice[0][0])+"  "+str(lattice[0][1])+"  "+str(lattice[0][2])+"\n")
-#     f.write(str(lattice[1][0])+"  "+str(lattice[1][1])+"  "+str(lattice[1][2])+"\n")
-#     f.write(str(lattice[2][0])+"  "+str(lattice[2][1])+"  "+str(lattice[2][2])+"\n")
-#     f.write(species_line+"\n")
-#     f.write(number_line+"\n")
-#     f.write("Direct"+"\n")
-#     for site in sites:
-#         coord = site._coord
-#         coord_line = str(coord[0])+"  "+str(coord[1])+"  "+str(coord[2])+"\n"
-#         f.write(coord_line)
-#
-#     f.close()
-#     shutil.move("POSCAR", work_dir)
-#     if os.path.exists("__pycache__") is True:
-#        os.system("rm -r __pycache__")
+def write_poscar(work_dir, struct):
+    file_path = os.path.join(work_dir, "POSCAR")
+    poscar = Poscar(struct)
+    poscar.write_file(file_path)
+    print("POSCAR file printed in: " work_dir+"/POSCAR")
 
-# def write_kpoints(work_dir, kmesh, qshift=None):
-#     """
-#     Generates VASP POSCAR file for VASP calculation.
-#
-#     **Args:
-#     workdir (str):
-#     kmesh (list):
-#     qmesh (list):
-#     """
-#     fl_nm = "KPOINTS"
-#     f=open(work_dir+"/"+fl_nm, "w+")
-#     f.write("Automatic mesh \n")
-#     f.write(str(0)+"\n")
-#     f.write("Gamma"+"\n")
-#     f.write(str(kmesh[0])+"  "+str(kmesh[1])+"  "+str(kmesh[2])+"\n")
-#     if qshift:
-#        f.write(str(qmesh[0])+"  "+str(qmesh[1])+"  "+str(qmesh[2])+"\n")
-#     else:
-#         f.write(str(0)+"  "+str(0)+"  "+str(0)+"\n")
-#     f.close()
-#     if os.path.exists("__pycache__") is True:
-#        os.system("rm -r __pycache__")
-
-def write_kpoints(file_path, kpts_dict):
-    kpt_obj = Kpoints()
-    kpt_obj.from_dict(kpts_dict)
+def write_kpoints(work_dir, kpts_dict):
+    file_path = os.path.join(work_dir, "KPOINTS")
+    kpt_obj = Kpoints().from_dict(kpts_dict)
     kpt_obj.write_file(file_path)
+    print("KPOINTS file printed in: " work_dir+"/KPOINTS")
+
+#def read_runscript(runscript_path):
 
 def read_incar(incar_path):
     incar = Incar.from_file(incar_path)
-    dict = incar.as_dict()
-    dict.pop("@class")
-    dict.pop("@module")
-    start_settings = set(["nwrite", "istart", "iniwav", "icharg", "nelect", "icorelevel", "loptics", "isym", "lelf", "lvhar", "rwigs", "lvtof", "nbands"])
-    electronic_settings = set(["prec", "algo", "encut", "nelm", "nelmin", "gga", "ediff", "ismear", "sigma", "lasph", "lreal", "addgrid", "maxmix", "bmix"])
-    magnetic_settings = set(["magmom", "ispin", "nupdown", "lsorbit", "saxis", "lnoncollinear"])
-    hubbard_settings  = set(["ldau", "ldauu", "ldatype", "ldaul", "ldauj", "lmaxmix"])
-    ionic_settings = set(["ediffg", "nsw", "ibrion", "isif", "isym", "nblock", "kblock", "iwavpr", "potim"])
-    hybrid_settings = set(["lhfcalc", "precfock", "nkred", "time", "hflmax", "hfscreen", "aexx"])
+    return incar.as_dict()
 
+def read_incar(incar_path):
+    incar = Incar.from_file(incar_path)
 
-    settings = {}
-    start_dict  = {}
-    electronic_dict  = {}
-    magnetic_dict  = {}
-    ionic_dict  = {}
-    hubbard_dict  = {}
-    hybrid_dict  = {}
-    misc_dict = {}
+#def read_potcar(runscript_path):
 
-    for key, value in dict.items():
-        key = key.lower()
-        value = str(value).split("!")
-        value = value[0]
-        if key in start_settings:
-            start_dict[key] = value
-        elif key in electronic_settings:
-            electronic_dict[key] = value
-        elif key in magnetic_settings:
-            magnetic_dict[key] = value
-        elif key in ionic_settings :
-            ionic_dict[key] = value
-        elif key in hubbard_settings:
-            hubbard_dict[key] = value
-        elif key in hybrid_settings :
-            hybrid_dict[key] = value
-        else:
-            misc_dict[key] = value
+def read_poscar(poscar_path):
+    poscar = Poscar().from_file(poscar_path,check_for_POTCAR=False)
+    struct = poscar.structure
+    return struct
 
-    settings["start"] = start_dict
-    settings["electronic"] = electronic_dict
-    settings["magnetic"] = magnetic_dict
-    settings["ionic"] = ionic_dict
-    settings["hubbard"] = hubbard_dict
-    settings["hybrid"] = hybrid_dict
-    settings["misc"] = misc_dict
-    return settings
-
-def read_kpoints(incar_path):
-    kpts = Kpoints(incar_path)
+def read_kpoints(kpt_path):
+    kpts = Kpoints(kpt_path)
     kpt_dict = kpts.as_dict()
     return kpt_dict
-
-
-#def get_total_energy(file):
-#def get_mag_moment(file):
-#def get_run_status(file):
-#def get_run_time(file):
