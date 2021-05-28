@@ -16,7 +16,7 @@ also manages the job submissions and input/output of a single VASP calculation.
   calc.make_calculation()
   calc.run_calculation()
 """
-
+import os
 from magmango.in_out import make_incar, make_kpoints, make_poscar, make_potcar
 
 class Calculation:
@@ -90,11 +90,6 @@ class Calculation:
         else:
             self._runscript = runscript
 
-        self._run_status = "not submitted"
-        #self._run_time = 0.0
-        #self._tot_energy = None
-        #self._mag_moment = None
-
     def make_calculation(self):
         """ Calculation make method. Generates specified files and directories of Calculation.
 
@@ -104,18 +99,19 @@ class Calculation:
 
         os.mkdir(self._path)
         print("Work Directory now in: " + self._path)
-        self._incar.write_file(self._path)
-        self._kpoints.write_file(self._path)
-        self._poscar.write_file(self._path)
-        self._potcar.write_file(self._path)
-        self._runscript.write_file(self._path)
+        self._incar.write_file(self._path+"/INCAR")
+        self._kpoints.write_file(self._path+"/KPOINTS")
+        self._poscar.write_file(self._path+"/POSCAR")
+        self._potcar.write_file(self._path+"/POTCAR")
+        self._runscript.write_file(self._path+"/run.sh")
 
     def run_calculation(self):
         # import threading, queue
         # q = queue.Queue()
         # def worker():
-        #     while True:
-        os.system("sbatch"+" "+self._runscript._file_name)
+        #     while True
+        os.chdir(self._path)
+        os.system("sbatch"+" "+"run.sh")
         #self._run_status = "submitted"
 
     #def update_run_status(self):

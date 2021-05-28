@@ -42,7 +42,7 @@ def write_runscript(work_dir, settings):
     f.close()
     print("Runscript file printed in: " + file_path)
 
-def write_incar(work_dir, input_settings):
+def write_incar(file_path, settings):
     """
     Generates VASP INCAR file for VASP calculation.
 
@@ -52,10 +52,10 @@ def write_incar(work_dir, input_settings):
     input_settings (InputParameters):
     """
 
-    file_path = os.path.join(work_dir,"INCAR")
-    incar = Incar().from_dict(file_path)
+    #file_path = os.path.join(work_dir,"INCAR")
+    incar = Incar().from_dict(settings)
     incar.write_file(file_path)
-    print("INCAR file printed in: " + file_path)
+    #print("INCAR file printed in: " + file_path)
 
 def write_potcar(work_dir, pseudo_dir, species):
     """
@@ -73,30 +73,24 @@ def write_potcar(work_dir, pseudo_dir, species):
     files = " ".join(paths)
     os.system("cat"+files+">> POTCAR")
     shutil.move("POTCAR", work_dir+"/POTCAR")
-    print("POTCAR file printed in: " work_dir+"/POTCAR")
+    ##print("POTCAR file printed in:" work_dir+"/POTCAR")
 
 def write_poscar(work_dir, struct):
-    file_path = os.path.join(work_dir, "POSCAR")
+    file_path = os.path.join(work_dir)
     poscar = Poscar(struct)
     poscar.write_file(file_path)
-    print("POSCAR file printed in: " work_dir+"/POSCAR")
+    ##print("POSCAR file printed in: " work_dir+"/POSCAR")
 
-def write_kpoints(work_dir, kpts_dict):
-    file_path = os.path.join(work_dir, "KPOINTS")
+def write_kpoints(file_path, kpts_dict):
     kpt_obj = Kpoints().from_dict(kpts_dict)
     kpt_obj.write_file(file_path)
-    print("KPOINTS file printed in: " work_dir+"/KPOINTS")
+    ##print("KPOINTS file printed in: " work_dir+"/KPOINTS")
 
 #def read_runscript(runscript_path):
 
 def read_incar(incar_path):
     incar = Incar.from_file(incar_path)
     return incar.as_dict()
-
-def read_incar(incar_path):
-    incar = Incar.from_file(incar_path)
-
-#def read_potcar(runscript_path):
 
 def read_poscar(poscar_path):
     poscar = Poscar().from_file(poscar_path,check_for_POTCAR=False)

@@ -46,13 +46,13 @@ class PotcarSettings:
 		# else:
 	    #     pass
        if self._file_paths:
-          os_command = "cat "
-          for file in self._file_paths:
-             os_command += file + " "
-          os_command = os_command + " >> " + file_path
-          os.system(os_command)
+           os_command = "cat "
+           for file in self._file_paths:
+               os_command += file + " "
+               os_command = os_command + " >> " + file_path
+           os.system(os_command)
        else:
-          pass
+           pass
 		# if self._outfile_path:
 		# 	shutil.copyfile(self._outfile_path, file_path)
 		# else:
