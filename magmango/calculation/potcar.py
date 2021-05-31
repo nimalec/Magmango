@@ -13,9 +13,9 @@ The setting types are partitioned into: start, electronic, parallel, magnetic, i
   settings = incar_obj.get_settings(setting_type = "all")
 """
 import os
-import shutil
+from shutil import copyfile
 class PotcarSettings:
-	def __init__(self, file_paths = None):
+    def __init__(self, file_paths = None):
 
         self._outfile_path = None
 		# if not from_file and file_paths is None:
@@ -28,31 +28,33 @@ class PotcarSettings:
 		# 			continue
 		# else:
 		# 	pass
-		self._file_paths = file_paths
+        self._file_paths = file_paths
 
-	def from_file(self, file_path):
+    def potcar_from_file(self, file_path):
 		# """Function... """
 		# if not os.path.isfile(file_path):
 		#     raise OSError(file_path+ ' ' + 'does not exist!')
 		# else:
 	    #     pass
-		self._outfile_path = file_path
 
-	def write_file(self, file_path):
+    #    copyfile(in_path, out_path)
+        self._outfile_path = file_path
+
+    def write_file(self, file_path):
 		# """Function... """
         #
 		# if not os.path.isdir(file_path):
 		#     raise OSError(file_path+ ' ' + 'does not exist!')
 		# else:
 	    #     pass
-       if self._file_paths:
-           os_command = "cat "
-           for file in self._file_paths:
-               os_command += file + " "
-               os_command = os_command + " >> " + file_path
-           os.system(os_command)
-       else:
-           pass
+        if self._file_paths:
+            os_command = "cat "
+            for file in self._file_paths:
+                os_command += file + " "
+                os_command = os_command + " >> " + file_path
+            os.system(os_command)
+        else:
+            pass
 		# if self._outfile_path:
 		# 	shutil.copyfile(self._outfile_path, file_path)
 		# else:

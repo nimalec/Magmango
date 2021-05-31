@@ -25,7 +25,7 @@ class PoscarSettings:
       copyfile(file_path,file_path + ".vasp")
       self._structure = read_poscar(file_path)
       self._file_path = file_path
-      os.rmdir(file_path + ".vasp")
+      #os.rmdir(file_path + ".vasp")
 
    def get_structure(self):
       return self._structure

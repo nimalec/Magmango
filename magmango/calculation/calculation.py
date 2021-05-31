@@ -17,102 +17,90 @@ also manages the job submissions and input/output of a single VASP calculation.
   calc.run_calculation()
 """
 import os
-from magmango.in_out import make_incar, make_kpoints, make_poscar, make_potcar
+from magmango.calculation.incar import IncarSettings
+from magmango.calculation.poscar import PoscarSettings
+from magmango.calculation.potcar import PotcarSettings
+from magmango.calculation.runscript import RunscriptSettings
+from magmango.calculation.kpoints import KpointsSettings
+from shutil import copyfile
 
 class Calculation:
-        """ Summary of class.
 
-        Longer class info.
+    def __init__(self, work_dir, incar=None, kpoints=None, poscar=None, potcar_path=None, runscript=None):
+        #
+        # if not isinstance(work_dir, str):
+        #     raise TypeError("dir_name or work_dir must be type str!")
+        #
+        # if not os.path.isdir(work_dir):
+        #     raise OSError("The work directory path" + " " + work_dir + "does not exist! Please choose another directory.")
+        # else:
+        #     self._work_dir = work_dir
+        self._work_dir = work_dir
+        self._incar = incar
+        self._kpoints = kpoints
+        self._poscar = poscar
+        self._potcar_path = potcar_path
+        self._runscript = runscript
 
-        Attributes:
-            _path:
-            _incar:
-            _kpoints:
-            _poscar:
-            _potcar:
-            _runscript:
-            _run_status:
-            _run_time:
-            _tot_energy:
-            _mag_moment:
-        """
+        # if not isinstance(incar, magmango.calculation.incar.IncarSettings):
+        #     raise TypeError("Input incar must be of type Incar!")
+        # else:
+        #     self._incar = incar
+        #
+        # if not isinstance(kpoints, magmango.calculation.kpoints.KPointsSettings):
+        #     raise TypeError("Input kpoints must be of type KPoints!")
+        # else:
+        #     self._kpoints = kpoints
+        #
+        # if not isinstance(poscar, magmango.calculation.poscar.PoscarSettings):
+        #     raise TypeError("Input poscar must be of type Poscar"!")
+        # else:
+        #     self._poscar = poscar
+        #
+        # if not isinstance(potcar, magmango.calculation.potcar.PotcarSettings):
+        #     raise TypeError("Input potcar must be of type Potcar!")
+        # else:
+        #     self._potcar =  potcar
+        #
+        # if not isinstance(runscript, magmango.calculation.runscript.RunscriptSettings):
+        #     raise TypeError("Input runscript must have type RunscriptSettings!")
+        # else:
+        #     self._runscript = runscript
 
-    def __init__(self, work_dir, incar, kpoints, poscar, potcar, runscript):
-        """ Calculation constructor method.
-
-        Retrieves rows pertaining to the given keys from the Table instance
-        represented by table_handle. String keys will be UTF-8 encoded.
-
-        Args:
-            work_dir:
-                Description of ....
-            incar:
-                Description of ...
-            kpoints:
-                Descritpion of ...
-            poscar:
-                Description of ...
-            potcar:
-                Description of ...
-            runscript:
-                Description of ...
-        """
-        if not isinstance(work_dir, str):
-            raise TypeError("dir_name or work_dir must be type str!")
-
-        if not os.path.isdir(work_dir):
-            raise OSError("The work directory path" + " " + work_dir + "does not exist! Please choose another directory.")
+    def make_calculation(self, work_dir=None):
+        if work_dir:
+            self._work_dir = work_dir
         else:
-            self._path = work_dir
-
-        if not isinstance(incar, magmango.calculation.incar.IncarSettings):
-            raise TypeError("Input incar must be of type Incar!")
-        else:
-            self._incar = incar
-
-        if not isinstance(kpoints, magmango.calculation.kpoints.KPointsSettings):
-            raise TypeError("Input kpoints must be of type KPoints!")
-        else:
-            self._kpoints = kpoints
-
-        if not isinstance(poscar, magmango.calculation.poscar.PoscarSettings):
-            raise TypeError("Input poscar must be of type Poscar"!")
-        else:
-            self._poscar = poscar
-
-        if not isinstance(potcar, magmango.calculation.potcar.PotcarSettings):
-            raise TypeError("Input potcar must be of type Potcar!")
-        else:
-            self._potcar =  potcar
-
-        if not isinstance(runscript, magmango.calculation.runscript.RunscriptSettings):
-            raise TypeError("Input runscript must have type RunscriptSettings!")
-        else:
-            self._runscript = runscript
-
-    def make_calculation(self):
-        """ Calculation make method. Generates specified files and directories of Calculation.
-
-        Retrieves rows pertaining to the given keys from the Table instance
-        represented by table_handle. String keys will be UTF-8 encoded.
-        """
-
-        os.mkdir(self._path)
-        print("Work Directory now in: " + self._path)
-        self._incar.write_file(self._path+"/INCAR")
-        self._kpoints.write_file(self._path+"/KPOINTS")
-        self._poscar.write_file(self._path+"/POSCAR")
-        self._potcar.write_file(self._path+"/POTCAR")
-        self._runscript.write_file(self._path+"/run.sh")
+            pass
+    #    print("Work Directory now in: " + self._work_dir)
+        os.mkdir(self._work_dir)
+        potcar  = PotcarSettings()
+        self._incar.write_file(self._work_dir+"/INCAR")
+        self._kpoints.write_file(self._work_dir+"/KPOINTS")
+        self._poscar.write_file(self._work_dir+"/POSCAR")
+        copyfile(self._potcar_path, self._work_dir+"/POTCAR")
+        self._runscript.write_file(self._work_dir+"/run.sh")
 
     def run_calculation(self):
         # import threading, queue
         # q = queue.Queue()
         # def worker():
         #     while True
-        os.chdir(self._path)
+        cwd_pth = os.getcwd()
+        os.chdir(self._work_dir)
         os.system("sbatch"+" "+"run.sh")
+        os.chdir(cwd_pth)
         #self._run_status = "submitted"
+
+    # def calculation_from_dir(self):
+    #     incar =
+    #     incar.
+    #     poscar =
+    #     kpoints =
+    #     runscript =
+
+
+
 
     #def update_run_status(self):
     # def update_tot_energy(self):

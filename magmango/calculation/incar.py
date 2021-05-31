@@ -33,5 +33,8 @@ class IncarSettings:
     def update_settings(self, key, value):
         self._settings[key] = value
 
+    def remove_settings(self, key):
+        self._settings.pop(key)
+
     def write_file(self,path):
         write_incar(path, self._settings)
