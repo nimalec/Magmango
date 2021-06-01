@@ -10,7 +10,7 @@ class RunscriptSettingsTest(unittest.TestCase):
       self.run_settings = {"job_name": "scf_cl", "qos": "regular", "nodes": 1, "constraint": "knl", "time": "24:00:00"}
       self.modules = ["vasp/20181030-knl"]
       self.exports = ["OMP_NUM_THREADS=4"]
-      self.execute = "vasp_std"
+      self.execute = "vasp_ncl"
       #self.execute = {"vasp_executable": "vasp_std", "run_line": "time srun -n16 -c16 --cpu_bind=cores $EXE"}
 
    #def test_from_file(self):

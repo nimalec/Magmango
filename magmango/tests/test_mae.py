@@ -7,7 +7,8 @@ from magmango.calculation.incar import IncarSettings
 class MaeTest(unittest.TestCase):
    def setUp(self):
        ## Include PTO in-files: kpts, poscar, potcar, incar
-       self.incar_file_path = "data/incar_pto"
+       self.work_dir = "data/mae_pto"
+
        ##setup calculations
 
    def test_mae_pts(self):
