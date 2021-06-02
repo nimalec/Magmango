@@ -19,5 +19,5 @@ class RunscriptSettingsTest(unittest.TestCase):
    #    incar_sett = incar_infile_sett._settings
 
    def test_write_file(self):
-      run_infile_sett = RunscriptSettings(self.runscript_file_path, self.run_settings,self.modules,self.exports, self.execute)
+      run_infile_sett = RunscriptSettings(run_settings=run_settings,modules=modules,exports=exports, execute=execute)
       run_infile_sett.write_file("data/run_cl_test.sh")

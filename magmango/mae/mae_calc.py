@@ -6,7 +6,7 @@ from magmango.calculation.runscript import RunscriptSettings
 #from magmango.calculation.incar_default_settings import DefaultMagNCLParameters
 
 class MagneticAnisotropyFlow:
-    def __init__(self, work_dir, npoints, angle_range, cl_calculation, nbands, runscript_ncl, cl_dir=None):
+    def __init__(self, work_dir, npoints, cl_calculation, nbands, runscript_ncl, angle_range=None, cl_dir=None):
         self._work_dir = work_dir
         self._npoints = npoints
         # If calculation class for CL provided
@@ -83,8 +83,8 @@ class MagneticAnisotropyFlow:
         for calc in self._noncollinear_calcs:
             calc.make_calculation()
 
-    def run_cl_calculations(self):
-        self._collinear_calc.run_calculation()
+    # def run_cl_calculations(self):
+    #     self._collinear_calc.run_calculation()
 
     # def run_ncl_calculations(self):
     #     for calc in self._noncollinear_calcs:

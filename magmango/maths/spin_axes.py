@@ -3,7 +3,7 @@ import pymatgen
 from numpy import arange, array, meshgrid, ones, sqrt, arccos, sin, cos, pi
 from pymatgen.symmetry.groups import SpaceGroup
 class SpinVectors:
-    def __init__(self, input_spins = None, npoints=None, space_group = None, angle_range = None):
+    def __init__(self, npoints, input_spins = None, space_group = None, angle_range = None):
         """
         Set of unit vector representing the orientation of spin magnetic moments.
 
