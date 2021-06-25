@@ -37,6 +37,7 @@ class KpointsSettingsTest(unittest.TestCase):
       kpoints_2.kpoints_from_file(out_path)
       for key in kpoints_1._settings:
          if key != "comment":
+            print(key)
             self.assertEqual(kpoints_1._settings[key], kpoints_2._settings[key])
          else:
             pass

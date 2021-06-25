@@ -26,7 +26,7 @@ from shutil import copyfile
 
 class Calculation:
 
-    def __init__(self, work_dir, incar=None, kpoints=None, poscar=None, potcar_path=None, runscript=None):
+    def __init__(self, work_dir=None, incar=None, kpoints=None, poscar=None, potcar_path=None, runscript=None):
         #
         # if not isinstance(work_dir, str):
         #     raise TypeError("dir_name or work_dir must be type str!")

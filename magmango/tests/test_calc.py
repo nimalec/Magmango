@@ -15,7 +15,7 @@ class CalculationSettingsTest(unittest.TestCase):
        self.poscar = PoscarSettings()
        self.poscar.poscar_from_file("data/poscar_pto.vasp")
        potcar = PotcarSettings()
-       potcar.from_file("data/potcar_pto")
+       potcar.potcar_from_file("data/potcar_pto")
        self.potcar_path = potcar._outfile_path
        runscript_file_path = "data/run_cl.sh"
 
