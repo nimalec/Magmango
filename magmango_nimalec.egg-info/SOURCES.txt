@@ -21,7 +21,6 @@ magmango/maths/__init__.py
 magmango/maths/direction_cosine.py
 magmango/maths/spherical_harmonic.py
 magmango/maths/spin_axes.py
-magmango/maths/test.py
 magmango/structure/__init__.py
 magmango/structure/structure.py
 magmango/tests/__init__.py

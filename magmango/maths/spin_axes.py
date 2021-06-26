@@ -41,9 +41,9 @@ class SpinVectors:
 
         assert type(npoints) is int ##change to isinstance
         self._npoints = npoints
-        thet_min = self._angle_range[1][0]
-        thet_max = self._angle_range[1][1]
-        phi_min = self._angle_range[0][0]
-        phi_max = self._angle_range[0][1]
+        thet_min = self._angle_range[0][0]
+        thet_max = self._angle_range[0][1]
+        phi_min = self._angle_range[1][0]
+        phi_max = self._angle_range[1][1]
         self._spin_axes, angle_list = generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max)
         self._spher_coords = [angle_list[0], angle_list[1], ones(npoints)]
