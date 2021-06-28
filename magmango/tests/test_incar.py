@@ -17,17 +17,19 @@ class IncarSettingsTest(unittest.TestCase):
 
    def test_from_file(self):
        incar_infile_sett = IncarSettings()
-       incar_infile_sett.incar_from_file(self.incar_file_path)
+       incar_infile_sett.from_file(self.incar_file_path)
        incar_sett = incar_infile_sett._settings
        for key in self.settings:
            self.assertEqual(self.settings[key], incar_sett[key])
 
    def test_get_method(self):
+       ##add get method for magmom (and maybe also U paramaters)
        incar = IncarSettings(self.settings)
        out = incar.get_settings("KPAR")
        self.assertEqual(out, 4)
 
    def test_update_method(self):
+       ## add update method for magmom
        incar = IncarSettings(self.settings)
        incar.update_settings("KPAR", 8)
        self.assertEqual(incar._settings["KPAR"], 8)
@@ -37,6 +39,6 @@ class IncarSettingsTest(unittest.TestCase):
        incar_1 = IncarSettings(self.settings)
        incar_1.write_file(out_path)
        incar_2 =  IncarSettings()
-       incar_2.incar_from_file(out_path)
+       incar_2.from_file(out_path)
        for key in self.settings:
            self.assertEqual(incar_1._settings[key], incar_2._settings[key])
