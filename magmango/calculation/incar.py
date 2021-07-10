@@ -6,7 +6,6 @@ class IncarSettings:
     def __init__(self, input_settings=None):
         #add exception handeling
         self._settings = input_settings
-        self._file_path = None
 
     def from_file(self, file_path):
         #add exception handeling

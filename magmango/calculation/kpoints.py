@@ -1,13 +1,6 @@
 import os
 from magmango.in_out.in_out import read_kpoints, write_kpoints
 class KpointsSettings:
-   """ Summary of class.
-
-        Longer class info.
-
-        Attributes:
-            _settings:
-   """
 
    def __init__(self, input_settings = None):
 
@@ -36,7 +29,6 @@ class KpointsSettings:
        else:
            pass
         ## return error message
-
 
    def write_file(self, file_path):
       # if not os.path.isdir(file_path):
