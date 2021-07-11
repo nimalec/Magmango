@@ -1,5 +1,6 @@
 #from magmango.in_out.in_out import write_runscript, read_runscript
 from magmango.in_out.in_out import write_runscript
+from shutil import copyfile
 
 class RunscriptSettings:
    def __init__(self, file_path=None, run_settings=None, modules=None, exports=None, execute=None, links=None):
@@ -27,7 +28,7 @@ class RunscriptSettings:
 	#	"""Function  """
       write_runscript(file_path, self._settings)
 
-   def runscript_from_file(self, file_path):
-	#	"""Function  """
-       pass 
+   def copy_file(self, file_path_in, file_path_out):
+       copyfile(file_path_in,file_path_out)
+
      # write_runscript(file_path, self._settings)

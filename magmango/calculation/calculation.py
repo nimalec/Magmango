@@ -7,7 +7,7 @@ from magmango.calculation.kpoints import KpointsSettings
 from shutil import copyfile
 
 class Calculation:
-    def __init__(self, incar, kpoints, poscar, potcar, runscript):
+    def __init__(self, incar=None, kpoints=None, poscar=None, potcar=None, runscript=None):
 
         self._incar = incar
         self._kpoints = kpoints
@@ -45,11 +45,11 @@ class Calculation:
         ## Insert exception haneling for input
         self._work_dir = work_dir
         os.mkdir(self._work_dir)
-        self._incar.write_file(os.join.path(self._work_dir, "INCAR"))
-        self._kpoints.write_file(os.join.path(self._work_dir, "KPOINTS"))
-        self._poscar.write_file(os.join.path(self._work_dir, "POSCAR"))
-        self._potcar.write_file(os.join.path(self._work_dir, "POTCAR"))
-        self._runscript.write_file(os.join.path(self._work_dir, "run.sh"))
+        self._incar.write_file(os.path.join(self._work_dir, "INCAR"))
+        self._kpoints.write_file(os.path.join(self._work_dir, "KPOINTS"))
+        self._poscar.write_file(os.path.join(self._work_dir, "POSCAR"))
+        self._potcar.write_file(os.path.join(self._work_dir, "POTCAR"))
+        self._runscript.write_file(os.path.join(self._work_dir, "run.sh"))
 
     def run_calculation(self):
         cwd_pth = os.getcwd()
