@@ -49,7 +49,7 @@ class Calculation:
         self._kpoints.write_file(os.path.join(self._work_dir, "KPOINTS"))
         self._poscar.write_file(os.path.join(self._work_dir, "POSCAR"))
         self._potcar.write_file(os.path.join(self._work_dir, "POTCAR"))
-        self._runscript.write_file(os.path.join(self._work_dir, "run.sh"))
+        #self._runscript.write_file(os.path.join(self._work_dir, "run.sh"))
 
     def run_calculation(self):
         cwd_pth = os.getcwd()

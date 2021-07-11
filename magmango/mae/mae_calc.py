@@ -8,7 +8,7 @@ from magmango.calculation.calculation import Calculation
 from magmango.calculation.incar import IncarSettings
 from magmango.calculation.poscar import PoscarSettings
 from magmango.calculation.potcar import PotcarSettings
-from magmango.calculation.runscript import RunscriptSettings
+#from magmango.calculation.runscript import RunscriptSettings
 from magmango.calculation.kpoints import KpointsSettings
 #from magmango.calculation.incar_default_settings import DefaultMagNCLParameters
 
@@ -19,6 +19,7 @@ class MagneticAnisotropyFlow:
         self._work_dir = work_dir
         self._npoints = npoints
 
+        os.mkdir(self._work_dir)
         #new_cl_dir = self._work_dir + "/scf_cl"
         if cl_calculation:
             #cl_calculation.make_calculation(new_cl_dir)
@@ -41,6 +42,7 @@ class MagneticAnisotropyFlow:
         else:
             pass
 
+        self._cl_calculation.make_calculation(os.path.join(self._work_dir,"scf_cl"))
         struct = self._cl_calculation._poscar._structure
         space_group = SpacegroupAnalyzer(struct).get_space_group_number()
 
@@ -52,49 +54,25 @@ class MagneticAnisotropyFlow:
             spins = SpinVectors(npoints=npoints)
         self._spins = spins._spin_axes.T
 
-        #def setup_ncl_calc(work_dir,spins,incar_cl,poscar,potcar,kpoints,runscript):
-        def setup_ncl_calc(spins,incar_cl,poscar,potcar,kpoints):
-           # ncl_calcs = []
+        def setup_ncl_calc(work_dir, spins,incar_cl,poscar,potcar,kpoints):
+            ncl_calcs = []
             incar_ncl = incar_cl
-            # incar_ncl.remove_settings("MAGMOM")
-            # incar_ncl.update_settings("ISPIN", 1)
-            # incar_ncl.update_settings("LSORBIT", ".TRUE.")
-            # incar_ncl.update_settings("LNONCOLLINEAR", ".TRUE.")
-            # incar_ncl.update_settings("LPLANE", ".FALSE.")
-            # incar_ncl.update_settings("NBANDS", str(2*nbands))
-            #ncl_dir = os.path.join(work_dir, "scf_ncl")
-            #os.mkdir(ncl_dir)
+            incar_ncl.remove_settings("MAGMOM")
+            incar_ncl.update_settings("ISPIN", 1)
+            incar_ncl.update_settings("LSORBIT", ".TRUE.")
+            incar_ncl.update_settings("LNONCOLLINEAR", ".TRUE.")
+            incar_ncl.update_settings("LPLANE", ".FALSE.")
+            #incar_ncl.update_settings("NBANDS", str(2*nbands))
+            ncl_dir = os.path.join(work_dir, "scf_ncl")
+            os.mkdir(ncl_dir)
             itr=0
-            calcs = []
             for spin in spins:
                 itr+=1
                 incar_ncl.update_settings("SAXIS",[spin[0], spin[1], spin[2]])
-                #calc  = Calculation(incar_ncl,kpoints,poscar,potcar,runscript)
                 calc  = Calculation(incar_ncl,kpoints,poscar,potcar)
-                #print(calc._incar.get_settings("SAXIS"))
-                calcs.append(calc)
-                #calc.make_calculation()
-                #calcs.append(Calculation(ncl_dir+"/"+"ncl_"+str(itr),incar_ncl,kpoints,poscar,potcar._outfile_path,runscript)
-            return calcs
+                calc.make_calculation(os.path.join(ncl_dir, "ncl_"+str(itr)))
+        setup_ncl_calc(self._work_dir, self._spins,self._cl_calculation._incar,self._cl_calculation._poscar,self._cl_calculation._potcar,self._cl_calculation._kpoints)
 
-
-        self._ncl_calculations = setup_ncl_calc(self._spins,self._cl_calculation._incar,self._cl_calculation._poscar,self._cl_calculation._potcar,self._cl_calculation._kpoints)
-
-        # for calc in self._ncl_calculations:
-        #     print(calc._incar._settings["SAXIS"])
-
-    def make_calculations(self):
-        os.mkdir(self._work_dir)
-        #os.mkdir(os.path.join(self._work_dir, "scf_cl"))
-        os.mkdir(os.path.join(self._work_dir, "scf_ncl"))
-        if self._cl_calculation:
-            self._cl_calculation.make_calculation(os.path.join(self._work_dir, "scf_cl"))
-        else:
-            pass
-
-        ## Create a list of calculations, rather than make calculations
-        # for calc in self._ncl_calculations:
-        #     calc.make_calculation()
 
     # def run_cl_calculations(self):
     #     self._collinear_calc.run_calculation()

@@ -48,5 +48,5 @@ class SpinVectors:
         phi_max = self._angle_range[1][1]
         spin_axes, angle_list = generate_semi_spin_axes_h(npoints, thet_min, thet_max, phi_min, phi_max)
         #self._spin_axes = np.uniquspin_axes,axis=0)
-        self._spin_axes  = np.unique(spin_axes.T,axis=0)
+        self._spin_axes  = np.unique(spin_axes.T,axis=0).T
         self._spher_coords = [angle_list[0], angle_list[1], ones(npoints)]
